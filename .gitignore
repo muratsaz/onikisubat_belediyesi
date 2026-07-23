@@ -1,13 +1,26 @@
-# Node
-node_modules/
+# Virtual Environment
+.venv/
 
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
+
+# Environment Variables
+.env
+
+# VS Code
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
 
 # Logs
 *.log
 
-# OS
-.DS_Store
-Thumbs.db
+# Uploads (isteğe bağlı)
+uploads/
+
+# Alembic cache
+*.sqlite3
