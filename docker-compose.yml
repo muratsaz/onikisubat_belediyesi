@@ -1,0 +1,8 @@
+version: '3.9'
+services:
+  app:
+    image: alpine:latest
+    command: ["sh", "-c", "echo 'Replace this with your service definitions' && sleep infinity"]
+    volumes:
+      - ./:/app
+    working_dir: /app
