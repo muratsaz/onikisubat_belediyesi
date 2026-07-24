@@ -1,3 +1,4 @@
+from app.api.user import router as user_router
 from fastapi import FastAPI
 
 app = FastAPI(
@@ -5,6 +6,7 @@ app = FastAPI(
     description="Onikişubat Belediyesi Kurumsal Web Sitesi API",
     version="1.0.0"
 )
+app.include_router(user_router)
 
 @app.get("/")
 def root():
