@@ -8,6 +8,11 @@ from app.database.base import Base
 
 from app.models.user import User
 from app.models.news import News
+from fastapi.staticfiles import StaticFiles
+
+
+from app.api import upload,announcement
+
 
 
 app = FastAPI(
@@ -20,6 +25,8 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(user_router)
 app.include_router(news_router)
+app.include_router(upload.router)
+app.include_router(announcement.router)
 
 
 @app.get("/")
@@ -34,3 +41,9 @@ def health():
     return {
         "status": "OK"
     }
+
+app.mount(
+    "/uploads",
+    StaticFiles(directory="app/uploads"),
+    name="uploads",
+)
