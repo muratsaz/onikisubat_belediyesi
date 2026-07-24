@@ -1,12 +1,17 @@
-from fastapi import HTTPException
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+
 from app.core.security import (
     authenticate_user,
     create_access_token,
 )
 from app.database.database import get_db
-from app.schemas.user import UserCreate, UserResponse, UserLogin,Token
+from app.schemas.user import (
+    UserCreate,
+    UserResponse,
+    Token,
+)
 from app.services.user_service import create_user
 
 router = APIRouter(
@@ -21,22 +26,24 @@ def test_users():
         "message": "Users API çalışıyor."
     }
 
-@router.post("/register",response_model=UserResponse)
+
+@router.post("/register", response_model=UserResponse)
 def register_user(
     user: UserCreate,
     db: Session = Depends(get_db)
 ):
     return create_user(db, user)
 
+
 @router.post("/login", response_model=Token)
 def login(
-    user: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
     db_user = authenticate_user(
         db,
-        user.email,
-        user.password
+        form_data.username,
+        form_data.password
     )
 
     if not db_user:
@@ -45,13 +52,13 @@ def login(
             detail="E-posta veya şifre hatalı."
         )
 
-    token = create_access_token(
-        {
+    access_token = create_access_token(
+        data={
             "sub": db_user.email
         }
     )
 
     return {
-        "access_token": token,
+        "access_token": access_token,
         "token_type": "bearer"
     }

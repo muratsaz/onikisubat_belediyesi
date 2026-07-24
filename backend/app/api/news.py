@@ -10,6 +10,7 @@ from app.services.news_service import (
     update_news,
     delete_news,
 )
+from app.core.security import require_admin
 
 router = APIRouter(
     prefix="/news",
@@ -18,7 +19,11 @@ router = APIRouter(
 
 
 @router.post("/", response_model=NewsResponse)
-def create(news: NewsCreate, db: Session = Depends(get_db)):
+def create(
+    news: NewsCreate,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin)
+):
     return create_news(db, news)
 
 
@@ -28,30 +33,53 @@ def get_all(db: Session = Depends(get_db)):
 
 
 @router.get("/{news_id}", response_model=NewsResponse)
-def get_one(news_id: int, db: Session = Depends(get_db)):
+def get_one(
+    news_id: int,
+    db: Session = Depends(get_db)
+):
     news = get_news_by_id(db, news_id)
 
     if not news:
-        raise HTTPException(status_code=404, detail="Haber bulunamadı")
+        raise HTTPException(
+            status_code=404,
+            detail="Haber bulunamadı"
+        )
 
     return news
 
 
 @router.put("/{news_id}", response_model=NewsResponse)
-def update(news_id: int, news: NewsUpdate, db: Session = Depends(get_db)):
+def update(
+    news_id: int,
+    news: NewsUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin)
+):
     updated = update_news(db, news_id, news)
 
     if not updated:
-        raise HTTPException(status_code=404, detail="Haber bulunamadı")
+        raise HTTPException(
+            status_code=404,
+            detail="Haber bulunamadı"
+        )
 
     return updated
 
 
 @router.delete("/{news_id}")
-def delete(news_id: int, db: Session = Depends(get_db)):
+def delete(
+    news_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin)
+):
     deleted = delete_news(db, news_id)
 
     if not deleted:
-        raise HTTPException(status_code=404, detail="Haber bulunamadı")
+        raise HTTPException(
+            status_code=404,
+            detail="Haber bulunamadı"
+        )
 
-    return {"message": "Haber başarıyla silindi."}
+    return {
+        "message": "Haber başarıyla silindi."
+    }
