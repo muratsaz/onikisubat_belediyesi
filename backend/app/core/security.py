@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, UTC
-
+from sqlalchemy.orm import Session
 from jose import jwt
 from passlib.context import CryptContext
 
@@ -45,3 +45,15 @@ def create_access_token(data: dict):
     )
 
     return encoded_jwt
+def authenticate_user(db: Session, email: str, password: str):
+    from app.models.user import User
+
+    user = db.query(User).filter(User.email == email).first()
+
+    if not user:
+        return None
+
+    if not verify_password(password, user.password):
+        return None
+
+    return user
