@@ -11,7 +11,7 @@ from app.models.news import News
 from fastapi.staticfiles import StaticFiles
 
 
-from app.api import upload,announcement
+from app.api import upload,announcement,event,gallery
 
 
 
@@ -27,6 +27,8 @@ app.include_router(user_router)
 app.include_router(news_router)
 app.include_router(upload.router)
 app.include_router(announcement.router)
+app.include_router(event.router)
+app.include_router(gallery.router)
 
 
 @app.get("/")

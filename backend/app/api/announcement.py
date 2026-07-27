@@ -33,9 +33,17 @@ def create(
 
 @router.get("/", response_model=list[AnnouncementResponse])
 def get_all(
+    skip: int = 0,
+    limit: int = 10,
+    search: str | None = None,
     db: Session = Depends(get_db),
 ):
-    return get_all_announcements(db)
+    return get_all_announcements(
+        db,
+        skip,
+        limit,
+        search,
+    )
 
 
 @router.get("/{announcement_id}", response_model=AnnouncementResponse)

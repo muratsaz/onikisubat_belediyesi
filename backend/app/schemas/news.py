@@ -1,24 +1,23 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NewsCreate(BaseModel):
-    title: str
-    slug: str
-    summary: str
-    content: str
-    image: str
-    category: str
+    title: str = Field(..., min_length=3, max_length=255)
+    summary: str = Field(..., min_length=10, max_length=500)
+    content: str = Field(..., min_length=10)
+    image: str = Field(..., min_length=1)
+    category: str = Field(..., min_length=2, max_length=100)
 
 
 class NewsUpdate(BaseModel):
-    title: str
-    slug: str
-    summary: str
-    content: str
-    image: str
-    category: str
+    title: str = Field(..., min_length=3, max_length=255)
+    slug: str = Field(..., min_length=3, max_length=255)
+    summary: str = Field(..., min_length=10, max_length=500)
+    content: str = Field(..., min_length=10)
+    image: str = Field(..., min_length=1)
+    category: str = Field(..., min_length=2, max_length=100)
     is_published: bool
 
 

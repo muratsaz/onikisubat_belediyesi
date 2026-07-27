@@ -1,11 +1,16 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
-
+from app.utils.slug import slugify
 from app.models.news import News
 from app.schemas.news import NewsCreate, NewsUpdate
 
 
 def create_news(db: Session, news: NewsCreate):
-    new_news = News(**news.model_dump())
+    news_data = news.model_dump()
+
+    news_data["slug"] = slugify(news.title)
+
+    new_news = News(**news_data)
 
     db.add(new_news)
     db.commit()
@@ -14,8 +19,30 @@ def create_news(db: Session, news: NewsCreate):
     return new_news
 
 
-def get_all_news(db: Session):
-    return db.query(News).order_by(News.id.desc()).all()
+def get_all_news(
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+    search: str | None = None,
+):
+    query = db.query(News)
+
+    if search:
+        query = query.filter(
+            or_(
+                News.title.ilike(f"%{search}%"),
+                News.summary.ilike(f"%{search}%"),
+                News.category.ilike(f"%{search}%"),
+            )
+        )
+
+    return (
+        query
+        .order_by(News.id.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def get_news_by_id(db: Session, news_id: int):

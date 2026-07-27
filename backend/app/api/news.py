@@ -28,8 +28,18 @@ def create(
 
 
 @router.get("/", response_model=list[NewsResponse])
-def get_all(db: Session = Depends(get_db)):
-    return get_all_news(db)
+def get_all(
+    skip: int = 0,
+    limit: int = 10,
+    search: str | None = None,
+    db: Session = Depends(get_db),
+):
+    return get_all_news(
+        db=db,
+        skip=skip,
+        limit=limit,
+        search=search,
+    )
 
 
 @router.get("/{news_id}", response_model=NewsResponse)
