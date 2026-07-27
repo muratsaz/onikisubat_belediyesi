@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-
+from app.api.dashboard import router as dashboard_router
 from app.api.user import router as user_router
 from app.api.news import router as news_router
-
+from app.api.page import router as page_router
 from app.database.database import engine
 from app.database.base import Base
 
@@ -29,7 +29,8 @@ app.include_router(upload.router)
 app.include_router(announcement.router)
 app.include_router(event.router)
 app.include_router(gallery.router)
-
+app.include_router(dashboard_router)
+app.include_router(page_router)
 
 @app.get("/")
 def root():

@@ -1,46 +1,44 @@
-from datetime import datetime
 from sqlalchemy.orm import Session
 
 from app.models.news import News
-from app.models.user import User
+from app.models.announcement import Announcement
+from app.models.event import Event
+from app.models.gallery import Gallery
 
 
-def get_dashboard_stats(db: Session) -> dict:
-    total_users = db.query(User).count()
-    total_news = db.query(News).count()
-    published_news = db.query(News).filter(News.is_published.is_(True)).count()
-    recent_news = (
+def get_dashboard_data(db: Session):
+    news_count = db.query(News).count()
+    announcement_count = db.query(Announcement).count()
+    event_count = db.query(Event).count()
+    gallery_count = db.query(Gallery).count()
+
+    latest_news = (
         db.query(News)
-        .order_by(News.published_at.desc())
+        .order_by(News.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    latest_announcements = (
+        db.query(Announcement)
+        .order_by(Announcement.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    latest_events = (
+        db.query(Event)
+        .order_by(Event.created_at.desc())
         .limit(5)
         .all()
     )
 
     return {
-        "total_users": total_users,
-        "total_news": total_news,
-        "published_news": published_news,
-        "recent_news": [
-            {
-                "id": item.id,
-                "title": item.title,
-                "slug": item.slug,
-                "published_at": item.published_at,
-            }
-            for item in recent_news
-        ],
-        "generated_at": datetime.utcnow(),
+        "news_count": news_count,
+        "announcement_count": announcement_count,
+        "event_count": event_count,
+        "gallery_count": gallery_count,
+        "latest_news": latest_news,
+        "latest_announcements": latest_announcements,
+        "latest_events": latest_events,
     }
-
-
-def get_recent_activity(db: Session, limit: int = 10) -> list:
-    return [
-        {
-            "id": item.id,
-            "title": item.title,
-            "slug": item.slug,
-            "published_at": item.published_at,
-            "is_published": item.is_published,
-        }
-        for item in db.query(News).order_by(News.updated_at.desc()).limit(limit).all()
-    ]
