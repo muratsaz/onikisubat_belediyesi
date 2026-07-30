@@ -1,10 +1,10 @@
 import Navbar from "./Navbar";
-import TopBar from "./TopBar";
+
 
 const Header = () => {
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
-      <TopBar />
+    <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
+      
       <Navbar />
     </header>
   );

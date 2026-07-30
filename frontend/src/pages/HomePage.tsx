@@ -1,8 +1,37 @@
+import { useEffect } from "react";
+
+import Hero from "../components/home/Hero";
+import MayorSection from "../components/home/MayorSection";
+import QuickLinks from "../components/home/QuickLinks";
+import NewsSection from "../components/home/NewsSection";
+import AnnouncementSection from "../components/home/AnnouncementSection";
+
 const HomePage = () => {
+  useEffect(() => {
+    const hash = window.location.hash;
+
+    if (!hash) return;
+
+    const element = document.getElementById(hash.replace("#", ""));
+
+    if (!element) return;
+
+    setTimeout(() => {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 250);
+  }, []);
+
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20">
-      <h1 className="text-4xl font-bold">Ana Sayfa</h1>
-    </section>
+    <>
+      <Hero />
+      <QuickLinks />
+      <MayorSection />
+      <NewsSection />
+      <AnnouncementSection />
+    </>
   );
 };
 
