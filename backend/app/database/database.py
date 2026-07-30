@@ -1,24 +1,32 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.core.config import *
+from app.core.config import DB_SERVER, DB_DATABASE
 
 DATABASE_URL = (
-    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    f"mssql+pyodbc://@{DB_SERVER}/{DB_DATABASE}"
+    "?driver=ODBC+Driver+18+for+SQL+Server"
+    "&trusted_connection=yes"
+    "&TrustServerCertificate=yes"
 )
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=3600,
+)
 
 SessionLocal = sessionmaker(
-    autocommit=False,
+    bind=engine,
     autoflush=False,
-    bind=engine
+    autocommit=False,
 )
+
+
 def get_db():
     db = SessionLocal()
 
     try:
         yield db
-
     finally:
         db.close()

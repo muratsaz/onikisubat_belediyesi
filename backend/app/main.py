@@ -5,10 +5,17 @@ from app.api.news import router as news_router
 from app.api.page import router as page_router
 from app.database.database import engine
 from app.database.base import Base
-
+from app.api import tender, contact_message
 from app.models.user import User
 from app.models.news import News
+from app.models.announcement import Announcement
+from app.models.event import Event
+from app.models.gallery import Gallery
+from app.models.page import Page
 from fastapi.staticfiles import StaticFiles
+from app.models.tender import Tender
+from app.models.tender_document import TenderDocument
+from app.models.contact_message import ContactMessage
 
 
 from app.api import upload,announcement,event,gallery
@@ -21,7 +28,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-Base.metadata.create_all(bind=engine)
+#Base.metadata.create_all(bind=engine)
 
 app.include_router(user_router)
 app.include_router(news_router)
@@ -31,7 +38,8 @@ app.include_router(event.router)
 app.include_router(gallery.router)
 app.include_router(dashboard_router)
 app.include_router(page_router)
-
+app.include_router(tender.router)
+app.include_router(contact_message.router)
 @app.get("/")
 def root():
     return {
