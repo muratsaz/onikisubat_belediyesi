@@ -9,15 +9,15 @@ import {
 import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-// 1. ÇÖZÜM: Dosya yolları bir üst dizine daha çıkacak şekilde (../../) güncellendi
-import PageHeader from "../../components/common/PageHeader";
-import { projectData } from "../../components/projects/projectData";
+// Dosya yolu pages/Kurumsal içinden src klasörüne çıkacak şekilde (../../) düzeltildi
+import PageHeader from "../components/common/PageHeader";
+import { projectData } from "../components/projects/projectData";
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // 2. ÇÖZÜM: TypeScript için 'project' değişkenine tip atandı
+  // TypeScript tip hatasını (implicit any) önlemek için (project: any) eklendi
   const currentIndex = projectData.findIndex(
     (project: any) => String(project.id) === String(id)
   );
@@ -155,7 +155,7 @@ const ProjectDetailPage = () => {
               <div className="rounded-3xl bg-white p-8 shadow-sm">
                 <h2 className="mb-8 text-2xl font-bold">Proje Galerisi</h2>
                 <div className="grid gap-5 sm:grid-cols-2">
-                  {/* 3. ÇÖZÜM: TypeScript için 'image' (string) ve 'index' (number) tipleri eklendi */}
+                  {/* TypeScript tip hatasını önlemek için (image: string, index: number) eklendi */}
                   {project.images?.map((image: string, index: number) => (
                     <motion.img
                       key={index}

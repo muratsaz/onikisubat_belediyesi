@@ -1,15 +1,17 @@
 import { Mail, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 
-import PageHero from "../../components/kurumsal/PageHero";
+
+import PageHeader from "../../components/common/PageHeader";
 
 const BaskanPage = () => {
   return (
     <>
-      <PageHero
-        title="Başkan"
-        description="Onikişubat Belediye Başkanı hakkında bilgi, özgeçmiş, mesaj ve görev yetkileri."
-      />
+      <PageHeader
+  title="Başkan"
+  section="Kurumsal"
+  description="Onikişubat Belediye Başkanı hakkında bilgi, özgeçmiş, mesaj ve görev yetkileri."
+/>
 
       <section className="bg-slate-50 py-20">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 lg:grid-cols-[380px_1fr]">

@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
-
+import ProjectDetailPage from "../../pages/ProjectDetailPage";
 import HomePage from "../../pages/HomePage";
 import CorporatePage from "../../pages/CorporatePage";
 import NewsPage from "../../pages/NewsPage";
@@ -10,7 +10,7 @@ import ProjectsPage from "../../pages/ProjectsPage";
 import ServicesPage from "../../pages/ServicesPage";
 import ContactPage from "../../pages/ContactPage";
 import TendersPage from "../../pages/TendersPage";
-
+import TenderDetailPage from "../../pages/TenderDetailPage";
 import NotFoundPage from "../../pages/NotFoundPage";
 
 import BaskanPage from "../../pages/Kurumsal/BaskanPage";
@@ -74,9 +74,21 @@ export const router = createBrowserRouter([
         element: <TendersPage />,
       },
       {
+  path: "ihaleler/:id",
+  element: <TenderDetailPage />,
+},
+      {
         path: "projeler",
         element: <ProjectsPage />,
       },
+      {
+    path: "projeler",
+    element: <ProjectsPage />,
+},
+{
+    path: "projeler/:id",
+    element: <ProjectDetailPage />,
+},
       {
         path: "hizmetler",
         element: <ServicesPage />,
