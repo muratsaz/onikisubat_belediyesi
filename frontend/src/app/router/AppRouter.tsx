@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-
+import EBelediyePage from "../../pages/EBelediyePage";
 import MainLayout from "../layouts/MainLayout";
 import ProjectDetailPage from "../../pages/ProjectDetailPage";
 import HomePage from "../../pages/HomePage";
@@ -7,7 +7,7 @@ import CorporatePage from "../../pages/CorporatePage";
 import NewsPage from "../../pages/NewsPage";
 import AnnouncementsPage from "../../pages/AnnouncementsPage";
 import ProjectsPage from "../../pages/ProjectsPage";
-import ServicesPage from "../../pages/ServicesPage";
+
 import ContactPage from "../../pages/ContactPage";
 import TendersPage from "../../pages/TendersPage";
 import TenderDetailPage from "../../pages/TenderDetailPage";
@@ -89,14 +89,15 @@ export const router = createBrowserRouter([
     path: "projeler/:id",
     element: <ProjectDetailPage />,
 },
-      {
-        path: "hizmetler",
-        element: <ServicesPage />,
-      },
+     
       {
         path: "iletisim",
         element: <ContactPage />,
       },
+      {
+    path: "e-belediye",
+    element: <EBelediyePage />,
+},
     ],
   },
   {

@@ -29,10 +29,6 @@ export const navigationItems: NavigationItem[] = [
     path: "/projeler",
   },
   {
-    title: "Hizmetler",
-    path: "/hizmetler",
-  },
-  {
     title: "İletişim",
     path: "/iletisim",
   },

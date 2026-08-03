@@ -2,8 +2,10 @@ import { useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useState } from "react";
 import { Menu, Search } from "lucide-react";
 
+import SearchModal from "../search/SearchModal";
 import MobileMenu from "./MobileMenu";
 import DropdownMenu from "./DropdownMenu";
+
 import {
   navigationItems,
   kurumsalItems,
@@ -11,6 +13,7 @@ import {
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -114,17 +117,24 @@ const Navbar = () => {
           {/* Sağ Butonlar */}
           <div className="flex items-center gap-3">
 
+            {/* Arama */}
             <button
+              onClick={() => setSearchOpen(true)}
               className="rounded-lg border p-2 transition hover:bg-slate-100"
               aria-label="Ara"
             >
               <Search size={20} />
             </button>
 
-            <button className="hidden rounded-lg bg-blue-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-800 lg:block">
+            {/* E-Belediye */}
+            <NavLink
+              to="/e-belediye"
+              className="hidden rounded-lg bg-blue-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-800 lg:block"
+            >
               E-Belediye
-            </button>
+            </NavLink>
 
+            {/* Mobil Menü */}
             <button
               className="rounded-lg border p-2 transition hover:bg-slate-100 lg:hidden"
               onClick={() => setMobileOpen(true)}
@@ -141,6 +151,11 @@ const Navbar = () => {
       <MobileMenu
         isOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
+      />
+
+      <SearchModal
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
       />
     </>
   );
