@@ -1,6 +1,5 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
 import { Menu, Search } from "lucide-react";
 
 import MobileMenu from "./MobileMenu";
@@ -12,20 +11,33 @@ import {
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+
   const navigate = useNavigate();
-const location = useLocation();
+  const location = useLocation();
 
-const handleNewsClick = (e: React.MouseEvent) => {
-  e.preventDefault();
+  const handleNewsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
 
-  if (location.pathname === "/") {
-    document
-      .getElementById("haberler")
-      ?.scrollIntoView({ behavior: "smooth" });
-  } else {
-    navigate("/#haberler");
-  }
-};
+    if (location.pathname === "/") {
+      document
+        .getElementById("haberler")
+        ?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/#haberler");
+    }
+  };
+
+  const handleAnnouncementClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (location.pathname === "/") {
+      document
+        .getElementById("announcements")
+        ?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/#announcements");
+    }
+  };
 
   return (
     <>
@@ -67,6 +79,14 @@ const handleNewsClick = (e: React.MouseEvent) => {
                       >
                         Haberler
                       </a>
+                    ) : item.title === "Duyurular" ? (
+                      <a
+                        href="#announcements"
+                        onClick={handleAnnouncementClick}
+                        className="font-medium text-slate-700 transition duration-200 hover:text-blue-600"
+                      >
+                        Duyurular
+                      </a>
                     ) : (
                       <NavLink
                         to={item.path}
@@ -75,7 +95,9 @@ const handleNewsClick = (e: React.MouseEvent) => {
                             "transition duration-200",
                             "font-medium",
                             "hover:text-blue-600",
-                            isActive ? "text-blue-700" : "text-slate-700",
+                            isActive
+                              ? "text-blue-700"
+                              : "text-slate-700",
                           ].join(" ")
                         }
                       >

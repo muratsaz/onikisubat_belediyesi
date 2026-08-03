@@ -1,0 +1,33 @@
+[33m5348693[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mbackup/old-frontend[m[33m)[m HEAD@{Fri Jul 31 11:20:18 2026}: checkout: moving from main to backup/old-frontend
+[33m10319c3[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{Fri Jul 31 11:18:26 2026}: checkout: moving from backup/old-frontend to main
+[33m10319c3[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m refs/remotes/origin/main@{Thu Jul 30 11:22:33 2026}: update by push
+[33m5348693[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mbackup/old-frontend[m[33m)[m refs/heads/backup/old-frontend@{Thu Jul 30 11:22:21 2026}: commit: Add frontend project
+[33m5348693[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mbackup/old-frontend[m[33m)[m HEAD@{Thu Jul 30 11:22:21 2026}: commit: Add frontend project
+[33mb209b08[m refs/heads/backup/old-frontend@{Thu Jul 30 11:00:01 2026}: commit: Migrate database from MySQL to MSSQL and add tenders/contact modules
+[33mb209b08[m HEAD@{Thu Jul 30 11:00:01 2026}: commit: Migrate database from MySQL to MSSQL and add tenders/contact modules
+[33m3540927[m refs/heads/backup/old-frontend@{Mon Jul 27 15:34:47 2026}: commit: feat: initialize frontend architecture and routing
+[33m3540927[m HEAD@{Mon Jul 27 15:34:47 2026}: commit: feat: initialize frontend architecture and routing
+[33m10319c3[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m refs/heads/backup/old-frontend@{Mon Jul 27 14:30:40 2026}: branch: Created from HEAD
+[33m10319c3[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{Mon Jul 27 14:30:40 2026}: checkout: moving from main to backup/old-frontend
+[33m10319c3[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m refs/heads/main@{Mon Jul 27 12:58:07 2026}: commit: feat: add dashboard hero section
+[33m10319c3[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{Mon Jul 27 12:58:07 2026}: commit: feat: add dashboard hero section
+[33mc4744d9[m refs/remotes/origin/main@{Mon Jul 27 10:47:27 2026}: update by push
+[33mc4744d9[m refs/heads/main@{Mon Jul 27 10:46:59 2026}: commit: feat: add dashboard and pages management module
+[33mc4744d9[m HEAD@{Mon Jul 27 10:46:59 2026}: commit: feat: add dashboard and pages management module
+[33m83c2584[m refs/remotes/origin/main@{Mon Jul 27 10:15:43 2026}: update by push
+[33m83c2584[m refs/heads/main@{Mon Jul 27 10:14:08 2026}: commit: feat: complete content management modules
+[33m83c2584[m HEAD@{Mon Jul 27 10:14:08 2026}: commit: feat: complete content management modules
+[33md948c36[m refs/heads/main@{Fri Jul 24 13:45:10 2026}: commit: feat: add announcement management module
+[33md948c36[m HEAD@{Fri Jul 24 13:45:10 2026}: commit: feat: add announcement management module
+[33m0ebe564[m refs/heads/main@{Fri Jul 24 11:18:51 2026}: commit: feat: implement JWT authentication and RBAC for news module
+[33m0ebe564[m HEAD@{Fri Jul 24 11:18:51 2026}: commit: feat: implement JWT authentication and RBAC for news module
+[33m8174873[m refs/heads/main@{Fri Jul 24 10:35:05 2026}: commit: feat: implement complete news CRUD module
+[33m8174873[m HEAD@{Fri Jul 24 10:35:05 2026}: commit: feat: implement complete news CRUD module
+[33mc856570[m refs/heads/main@{Fri Jul 24 09:53:28 2026}: commit: feat: add user registration service
+[33mc856570[m HEAD@{Fri Jul 24 09:53:28 2026}: commit: feat: add user registration service
+[33m6c48e43[m refs/remotes/origin/main@{Thu Jul 23 15:56:32 2026}: update by push
+[33m6c48e43[m refs/heads/main@{Thu Jul 23 15:56:25 2026}: commit: Initialize FastAPI backend and database setup
+[33m6c48e43[m HEAD@{Thu Jul 23 15:56:25 2026}: commit: Initialize FastAPI backend and database setup
+[33m549f4cd[m refs/remotes/origin/main@{Thu Jul 23 14:50:04 2026}: update by push
+[33m549f4cd[m refs/heads/main@{Thu Jul 23 14:49:57 2026}: commit (initial): Initial project structure
+[33m549f4cd[m HEAD@{Thu Jul 23 14:49:57 2026}: commit (initial): Initial project structure

@@ -1,8 +1,12 @@
 const ContactPage = () => {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20">
+    <main className="mx-auto max-w-7xl px-4 py-20">
       <h1 className="text-4xl font-bold">İletişim</h1>
-    </section>
+
+      <p className="mt-4 text-gray-600">
+        İletişim sayfası yeniden oluşturuluyor.
+      </p>
+    </main>
   );
 };
 

@@ -9,6 +9,8 @@ import AnnouncementsPage from "../../pages/AnnouncementsPage";
 import ProjectsPage from "../../pages/ProjectsPage";
 import ServicesPage from "../../pages/ServicesPage";
 import ContactPage from "../../pages/ContactPage";
+import TendersPage from "../../pages/TendersPage";
+
 import NotFoundPage from "../../pages/NotFoundPage";
 
 import BaskanPage from "../../pages/Kurumsal/BaskanPage";
@@ -66,6 +68,10 @@ export const router = createBrowserRouter([
       {
         path: "duyurular",
         element: <AnnouncementsPage />,
+      },
+      {
+        path: "ihaleler",
+        element: <TendersPage />,
       },
       {
         path: "projeler",
