@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import PageHeader from "../../components/common/PageHeader";
 import Button from "../../components/ui/Button";
@@ -10,36 +10,53 @@ import NewsForm, {
   type NewsFormData,
 } from "../../components/news/NewsForm";
 
-import { newsData, type News } from "../../data/newsData";
-
-const createSlug = (text: string) =>
-  text
-    .toLocaleLowerCase("tr")
-    .replace(/ı/g, "i")
-    .replace(/ğ/g, "g")
-    .replace(/ü/g, "u")
-    .replace(/ş/g, "s")
-    .replace(/ö/g, "o")
-    .replace(/ç/g, "c")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
+import type { News } from "../../data/newsData";
+import {
+  getAllNews,
+  createNews,
+  updateNews,
+  deleteNews,
+} from "../../services/newsService";
 
 const NewsPage = () => {
-  const [news, setNews] = useState<News[]>(newsData);
-
+  const [news, setNews] = useState<News[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [editingNews, setEditingNews] =
-    useState<News | null>(null);
+  const [editingNews, setEditingNews] = useState<News | null>(null);
 
   const [search, setSearch] = useState("");
-
   const [filter, setFilter] = useState<
     "Tümü" | "Yayında" | "Taslak"
   >("Tümü");
-
   const [category, setCategory] = useState("Tümü");
+
+  const loadNews = async () => {
+    try {
+      const response = await getAllNews();
+
+      const formatted: News[] = response.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        summary: item.summary,
+        content: item.content,
+        category: item.category,
+        status: item.is_published ? "Yayında" : "Taslak",
+        author: item.author,
+        publishDate: item.published_at
+          ? new Date(item.published_at).toLocaleDateString("tr-TR")
+          : "",
+        image: item.image ?? "",
+        slug: item.slug,
+      }));
+
+      setNews(formatted);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    loadNews();
+  }, []);
 
   const filteredNews = useMemo(() => {
     return news.filter((item) => {
@@ -74,43 +91,26 @@ const NewsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = (data: NewsFormData) => {
-    if (editingNews) {
-      setNews((prev) =>
-        prev.map((item) =>
-          item.id === editingNews.id
-            ? {
-                ...item,
-                ...data,
-                image: data.image,
-                slug: createSlug(data.title),
-              }
-            : item
-        )
-      );
-    } else {
-      const newNews: News = {
-        id:
-          news.length > 0
-            ? Math.max(...news.map((n) => n.id)) + 1
-            : 1,
+  const handleSave = async (
+    data: NewsFormData
+  ) => {
+    try {
+      if (editingNews) {
+        await updateNews(
+          editingNews.id,
+          data
+        );
+      } else {
+        await createNews(data);
+      }
 
-        title: data.title,
-        summary: data.summary,
-        content: data.content,
-        category: data.category,
-        status: data.status,
-        author: data.author,
-        publishDate: data.publishDate,
-        image: data.image,
-        slug: createSlug(data.title),
-      };
+      await loadNews();
 
-      setNews((prev) => [newNews, ...prev]);
+      setEditingNews(null);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error(err);
     }
-
-    setEditingNews(null);
-    setIsModalOpen(false);
   };
 
   const handleEdit = (item: News) => {
@@ -118,16 +118,21 @@ const NewsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (
+    id: number
+  ) => {
     const confirmed = window.confirm(
       "Bu haberi silmek istediğinize emin misiniz?"
     );
 
     if (!confirmed) return;
 
-    setNews((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
+    try {
+      await deleteNews(id);
+      await loadNews();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleCloseModal = () => {
@@ -184,4 +189,4 @@ const NewsPage = () => {
   );
 };
 
-export default NewsPage; 
+export default NewsPage;

@@ -7,7 +7,7 @@ export interface News {
   status: "Yayında" | "Taslak";
   author: string;
   publishDate: string;
-  image: string | File | null;
+  image: string ;
   slug: string;
 }
 
@@ -23,7 +23,7 @@ export const newsData: News[] = [
     status: "Yayında",
     author: "Admin",
     publishDate: "04.08.2026",
-    image: null,
+    image: "",
     slug: "yeni-millet-bahcesi-projesi-basladi",
   },
   {
@@ -37,7 +37,7 @@ export const newsData: News[] = [
     status: "Yayında",
     author: "Admin",
     publishDate: "03.08.2026",
-    image: null,
+    image: "",
     slug: "asfalt-calismalari-devam-ediyor",
   },
   {
@@ -51,7 +51,7 @@ export const newsData: News[] = [
     status: "Taslak",
     author: "Editör",
     publishDate: "02.08.2026",
-    image: null,
+    image: "",
     slug: "spor-kompleksi-acilisi",
   },
 ];

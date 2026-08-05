@@ -4,7 +4,7 @@ from sqlalchemy import (
     DateTime,
     Integer,
     String,
-    Text
+    Text,
 )
 from sqlalchemy.sql import func
 
@@ -18,33 +18,36 @@ class News(Base):
 
     title = Column(String(255), nullable=False)
 
-    slug = Column(String(255), unique=True, nullable=False)
+    slug = Column(String(255), unique=True, nullable=False, index=True)
 
-    summary = Column(Text)
+    summary = Column(Text, nullable=False)
 
     content = Column(Text, nullable=False)
 
-    image = Column(String(255))
+    image = Column(String(255), nullable=True)
 
-    category = Column(String(100))
+    category = Column(String(100), nullable=False)
+
+    author = Column(String(100), nullable=False, default="Admin")
 
     is_published = Column(
         Boolean,
-        default=True
+        nullable=False,
+        default=False,
     )
 
     published_at = Column(
         DateTime(timezone=True),
-        server_default=func.now()
+        nullable=True,
     )
 
     created_at = Column(
         DateTime(timezone=True),
-        server_default=func.now()
+        server_default=func.now(),
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
     )

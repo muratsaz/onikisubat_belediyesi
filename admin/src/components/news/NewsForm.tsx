@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { News } from "../../data/newsData";
 import { ImagePlus } from "lucide-react";
-
+import { uploadImage } from "../../services/uploadService";
 
 export interface NewsFormData {
   title: string;
@@ -11,7 +11,7 @@ export interface NewsFormData {
   content: string;
   author: string;
   publishDate: string;
-  image: string|File | null;
+  image: string;
 }
 
 interface NewsFormProps {
@@ -51,7 +51,7 @@ const NewsForm = ({
     new Date().toISOString().split("T")[0]
   );
 
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
@@ -66,6 +66,8 @@ const NewsForm = ({
         initialData.publishDate ??
           new Date().toISOString().split("T")[0]
       );
+      setImage(initialData.image ?? "");
+      setPreview(initialData.image ?? "");
     } else {
       setTitle("");
       setCategory("");
@@ -76,20 +78,35 @@ const NewsForm = ({
       setPublishDate(
         new Date().toISOString().split("T")[0]
       );
-      setImage(null);
+      setImage("");
       setPreview("");
     }
   }, [initialData, isEditing]);
 
-  const handleImageChange = (
+  const handleImageChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
-    setImage(file);
     setPreview(URL.createObjectURL(file));
+
+    try {
+      const response = await uploadImage(
+        file,
+        "news"
+      );
+
+      setImage(response.path);
+
+      console.log(response);
+
+    } catch (err) {
+      console.error(err);
+
+      alert("Fotoğraf yüklenemedi.");
+    }
   };
 
   const handleSubmit = () => {
@@ -218,46 +235,46 @@ const NewsForm = ({
       </div>
 
       <div>
-  <label className="mb-2 block font-medium text-slate-700">
-    Kapak Fotoğrafı
-  </label>
+        <label className="mb-2 block font-medium text-slate-700">
+          Kapak Fotoğrafı
+        </label>
 
-  <label
-    htmlFor="news-image"
-    className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
-  >
-    <ImagePlus
-      size={48}
-      className="mb-3 text-blue-600"
-    />
+        <label
+          htmlFor="news-image"
+          className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
+        >
+          <ImagePlus
+            size={48}
+            className="mb-3 text-blue-600"
+          />
 
-    <p className="font-semibold text-slate-700">
-      Kapak Fotoğrafı Seç
-    </p>
+          <p className="font-semibold text-slate-700">
+            Kapak Fotoğrafı Seç
+          </p>
 
-    <p className="mt-2 text-sm text-slate-500">
-      JPG, PNG veya WEBP
-    </p>
-  </label>
+          <p className="mt-2 text-sm text-slate-500">
+            JPG, PNG veya WEBP
+          </p>
+        </label>
 
-  <input
-    id="news-image"
-    type="file"
-    accept="image/*"
-    onChange={handleImageChange}
-    className="hidden"
-  />
+        <input
+          id="news-image"
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="hidden"
+        />
 
-  {preview && (
-    <div className="mt-5">
-      <img
-        src={preview}
-        alt="Önizleme"
-        className="h-64 w-full rounded-2xl border object-cover"
-      />
-    </div>
-  )}
-</div>
+        {preview && (
+          <div className="mt-5">
+            <img
+              src={preview}
+              alt="Önizleme"
+              className="h-64 w-full rounded-2xl border object-cover"
+            />
+          </div>
+        )}
+      </div>
       <div>
         <label className="mb-2 block font-medium text-slate-700">
           Haber Özeti

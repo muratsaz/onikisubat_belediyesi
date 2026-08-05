@@ -32,6 +32,7 @@ def get_all(
     skip: int = 0,
     limit: int = 10,
     search: str | None = None,
+    published: bool | None = None,
     db: Session = Depends(get_db),
 ):
     return get_all_news(
@@ -39,6 +40,7 @@ def get_all(
         skip=skip,
         limit=limit,
         search=search,
+        published=published
     )
 
 
