@@ -48,6 +48,10 @@ def get_all_announcements(
     published: bool | None = None,
 ):
     query = db.query(Announcement)
+    if published is not None:
+     query = query.filter(
+        Announcement.is_published == published
+    )
 
     if search:
         query = query.filter(

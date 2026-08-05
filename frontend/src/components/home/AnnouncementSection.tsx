@@ -1,58 +1,43 @@
 import { motion } from "framer-motion";
 import { Bell, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import api from "../../services/api";
 import ContentModal from "../common/ContentModal/ContentModal";
 
-const announcements = [
-  {
-    id: 1,
-    title: "Su Kesintisi Duyurusu",
-    category: "Duyuru",
-    date: "27 Temmuz 2026",
-    image: "/images/announcements/announcement1.jpg",
-    excerpt:
-      "İlçemizin bazı mahallelerinde planlı su kesintisi uygulanacaktır.",
-    content:
-      "KASKİ tarafından gerçekleştirilecek bakım ve onarım çalışmaları nedeniyle belirtilen mahallelerde belirli saatler arasında planlı su kesintisi uygulanacaktır. Vatandaşlarımızın gerekli tedbirleri almaları önemle rica olunur.",
-  },
-  {
-    id: 2,
-    title: "Emlak Vergisi Son Ödeme Tarihi",
-    category: "Duyuru",
-    date: "24 Temmuz 2026",
-    image: "/images/announcements/announcement2.jpg",
-    excerpt:
-      "2026 yılı emlak vergisi ikinci taksit ödemeleri devam ediyor.",
-    content:
-      "Vatandaşlarımız emlak vergisi ödemelerini belediyemiz veznelerinden veya online ödeme sistemi üzerinden gerçekleştirebilirler.",
-  },
-  {
-    id: 3,
-    title: "Kurban Pazarı Bilgilendirmesi",
-    category: "Duyuru",
-    date: "20 Temmuz 2026",
-    image: "/images/announcements/announcement3.jpg",
-    excerpt:
-      "Kurban satış ve kesim alanlarına ilişkin bilgilendirme yayımlandı.",
-    content:
-      "Kurban satış alanları, kesim noktaları ve uyulması gereken kurallar belediyemiz tarafından belirlenmiştir.",
-  },
-  {
-    id: 4,
-    title: "Yol Bakım Çalışmaları",
-    category: "Duyuru",
-    date: "18 Temmuz 2026",
-    image: "/images/announcements/announcement4.jpg",
-    excerpt:
-      "İlçe genelinde asfalt bakım ve onarım çalışmaları devam ediyor.",
-    content:
-      "Çalışmalar süresince bazı yollar geçici olarak trafiğe kapatılacaktır. Sürücülerin trafik işaret ve yönlendirmelerine uymaları önemle rica olunur.",
-  },
-];
-
 const AnnouncementSection = () => {
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    loadAnnouncements();
+  }, []);
+
+  const loadAnnouncements = async () => {
+    try {
+      const response = await api.get(
+  "/announcements/?published=true"
+);
+
+      const data = response.data.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        category: "Duyuru",
+        date: item.published_at
+          ? new Date(item.published_at).toLocaleDateString("tr-TR")
+          : "",
+        image: "",
+        excerpt: item.summary,
+        content: item.content,
+      }));
+
+      setAnnouncements(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleOpen = (index: number) => {
     setCurrentIndex(index);
@@ -63,6 +48,10 @@ const AnnouncementSection = () => {
     if (index < 0 || index >= announcements.length) return;
     setCurrentIndex(index);
   };
+
+  if (announcements.length === 0) {
+    return null;
+  }
 
   return (
     <>
