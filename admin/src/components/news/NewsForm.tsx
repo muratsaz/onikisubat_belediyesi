@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { News } from "../../data/newsData";
+import { ImagePlus } from "lucide-react";
+
 
 export interface NewsFormData {
   title: string;
@@ -6,15 +9,30 @@ export interface NewsFormData {
   status: "Taslak" | "Yayında";
   summary: string;
   content: string;
+  author: string;
+  publishDate: string;
+  image: string|File | null;
 }
 
 interface NewsFormProps {
   onCancel: () => void;
   onSave: (data: NewsFormData) => void;
-  // Ana sayfadan (NewsPage) gönderilen propları burada karşılıyoruz
-  initialData?: any; 
+  initialData?: News | null;
   isEditing?: boolean;
 }
+
+const categories = [
+  "Projeler",
+  "Duyuru",
+  "Etkinlik",
+  "Spor",
+  "Kültür",
+  "Sosyal Yardım",
+  "Çevre",
+  "Ulaşım",
+  "Eğitim",
+  "Diğer",
+];
 
 const NewsForm = ({
   onCancel,
@@ -24,43 +42,87 @@ const NewsForm = ({
 }: NewsFormProps) => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
-  const [status, setStatus] = useState<"Taslak" | "Yayında">("Taslak");
+  const [status, setStatus] =
+    useState<"Taslak" | "Yayında">("Taslak");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
+  const [author, setAuthor] = useState("Admin");
+  const [publishDate, setPublishDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
-  // Düzenleme modunda modal açıldığında, form alanlarını mevcut verilerle doldurur
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState("");
+
   useEffect(() => {
     if (initialData && isEditing) {
-      setTitle(initialData.title || "");
-      setCategory(initialData.category || "");
-      setStatus(initialData.status || "Taslak");
-      setSummary(initialData.summary || "");
-      setContent(initialData.content || "");
+      setTitle(initialData.title ?? "");
+      setCategory(initialData.category ?? "");
+      setStatus(initialData.status ?? "Taslak");
+      setSummary(initialData.summary ?? "");
+      setContent(initialData.content ?? "");
+      setAuthor(initialData.author ?? "Admin");
+      setPublishDate(
+        initialData.publishDate ??
+          new Date().toISOString().split("T")[0]
+      );
     } else {
-      // Yeni haber eklenirken formu temizler
       setTitle("");
       setCategory("");
       setStatus("Taslak");
       setSummary("");
       setContent("");
+      setAuthor("Admin");
+      setPublishDate(
+        new Date().toISOString().split("T")[0]
+      );
+      setImage(null);
+      setPreview("");
     }
   }, [initialData, isEditing]);
 
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
   const handleSubmit = () => {
+    if (!title.trim()) {
+      alert("Başlık zorunludur.");
+      return;
+    }
+
+    if (!category) {
+      alert("Kategori seçiniz.");
+      return;
+    }
+
+    if (!summary.trim()) {
+      alert("Özet zorunludur.");
+      return;
+    }
+
+    if (!content.trim()) {
+      alert("İçerik zorunludur.");
+      return;
+    }
+
     onSave({
       title,
       category,
       status,
       summary,
       content,
+      author,
+      publishDate,
+      image,
     });
-
-    // Kaydettikten sonra state'i sıfırlama (Modal zaten kapanacağı için opsiyoneldir)
-    setTitle("");
-    setCategory("");
-    setStatus("Taslak");
-    setSummary("");
-    setContent("");
   };
 
   return (
@@ -68,11 +130,11 @@ const NewsForm = ({
       className="space-y-6"
       onSubmit={(e) => e.preventDefault()}
     >
-      {/* Başlık */}
       <div>
         <label className="mb-2 block font-medium text-slate-700">
           Haber Başlığı
         </label>
+
         <input
           type="text"
           value={title}
@@ -82,29 +144,40 @@ const NewsForm = ({
         />
       </div>
 
-      {/* Kategori + Durum */}
       <div className="grid grid-cols-2 gap-6">
         <div>
           <label className="mb-2 block font-medium text-slate-700">
             Kategori
           </label>
-          <input
-            type="text"
+
+          <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            placeholder="Kategori..."
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
-          />
+          >
+            <option value="">
+              Kategori Seçiniz
+            </option>
+
+            {categories.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label className="mb-2 block font-medium text-slate-700">
             Durum
           </label>
+
           <select
             value={status}
             onChange={(e) =>
-              setStatus(e.target.value as "Taslak" | "Yayında")
+              setStatus(
+                e.target.value as "Taslak" | "Yayında"
+              )
             }
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
           >
@@ -114,11 +187,82 @@ const NewsForm = ({
         </div>
       </div>
 
-      {/* Özet */}
+      <div className="grid grid-cols-2 gap-6">
+        <div>
+          <label className="mb-2 block font-medium text-slate-700">
+            Yazar
+          </label>
+
+          <input
+            type="text"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            className="w-full rounded-xl border border-slate-300 px-4 py-3"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block font-medium text-slate-700">
+            Yayın Tarihi
+          </label>
+
+          <input
+            type="date"
+            value={publishDate}
+            onChange={(e) =>
+              setPublishDate(e.target.value)
+            }
+            className="w-full rounded-xl border border-slate-300 px-4 py-3"
+          />
+        </div>
+      </div>
+
+      <div>
+  <label className="mb-2 block font-medium text-slate-700">
+    Kapak Fotoğrafı
+  </label>
+
+  <label
+    htmlFor="news-image"
+    className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
+  >
+    <ImagePlus
+      size={48}
+      className="mb-3 text-blue-600"
+    />
+
+    <p className="font-semibold text-slate-700">
+      Kapak Fotoğrafı Seç
+    </p>
+
+    <p className="mt-2 text-sm text-slate-500">
+      JPG, PNG veya WEBP
+    </p>
+  </label>
+
+  <input
+    id="news-image"
+    type="file"
+    accept="image/*"
+    onChange={handleImageChange}
+    className="hidden"
+  />
+
+  {preview && (
+    <div className="mt-5">
+      <img
+        src={preview}
+        alt="Önizleme"
+        className="h-64 w-full rounded-2xl border object-cover"
+      />
+    </div>
+  )}
+</div>
       <div>
         <label className="mb-2 block font-medium text-slate-700">
           Haber Özeti
         </label>
+
         <textarea
           rows={4}
           value={summary}
@@ -128,11 +272,11 @@ const NewsForm = ({
         />
       </div>
 
-      {/* İçerik */}
       <div>
         <label className="mb-2 block font-medium text-slate-700">
           Haber İçeriği
         </label>
+
         <textarea
           rows={10}
           value={content}
@@ -142,7 +286,6 @@ const NewsForm = ({
         />
       </div>
 
-      {/* Butonlar */}
       <div className="flex justify-end gap-4 border-t border-slate-200 pt-6">
         <button
           type="button"

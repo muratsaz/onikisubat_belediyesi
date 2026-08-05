@@ -52,82 +52,23 @@ const SearchModal = ({
   }, [open, onClose]);
 
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    if (!query.trim()) return [];
 
-    if (!q) return [];
+    return searchData.filter((item) => {
+      const q = query.toLowerCase();
 
-    return searchData
-      .filter((item) => {
-        const titleMatch = item.title
+      return (
+        item.title
           .toLowerCase()
-          .includes(q);
-
-        const descriptionMatch = item.description
+          .includes(q) ||
+        item.description
           .toLowerCase()
-          .includes(q);
-
-        const categoryMatch = item.category
+          .includes(q) ||
+        item.category
           .toLowerCase()
-          .includes(q);
-
-        const keywordMatch = item.keywords.some((keyword) =>
-          keyword.toLowerCase().includes(q)
-        );
-
-        return (
-          titleMatch ||
-          descriptionMatch ||
-          categoryMatch ||
-          keywordMatch
-        );
-      })
-      .sort((a, b) => {
-        const getScore = (item: typeof a) => {
-          let score = 0;
-
-          if (
-            item.title.toLowerCase().startsWith(q)
-          )
-            score += 100;
-
-          if (
-            item.title.toLowerCase().includes(q)
-          )
-            score += 60;
-
-          if (
-            item.keywords.some(
-              (k) => k.toLowerCase() === q
-            )
-          )
-            score += 50;
-
-          if (
-            item.keywords.some((k) =>
-              k.toLowerCase().includes(q)
-            )
-          )
-            score += 30;
-
-          if (
-            item.description
-              .toLowerCase()
-              .includes(q)
-          )
-            score += 15;
-
-          if (
-            item.category
-              .toLowerCase()
-              .includes(q)
-          )
-            score += 10;
-
-          return score;
-        };
-
-        return getScore(b) - getScore(a);
-      });
+          .includes(q)
+      );
+    });
   }, [query]);
 
   if (!open) return null;
@@ -158,7 +99,7 @@ const SearchModal = ({
             onChange={(e) =>
               setQuery(e.target.value)
             }
-            placeholder="Haber, proje, ihale, müdürlük, hizmet ara..."
+            placeholder="Haber, proje, ihale, müdürlük ara..."
             className="flex-1 border-none text-lg outline-none"
           />
 
