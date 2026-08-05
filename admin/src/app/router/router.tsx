@@ -5,6 +5,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import DashboardPage from "../../pages/Dashboard/DashboardPage";
 import LoginPage from "../../pages/Login/LoginPage";
 import NewsPage from "../../pages/News/NewsPage";
+import AnnouncementPage from "../../pages/Announcements/AnnouncementPage";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
       {
         path: "news",
         element: <NewsPage />,
+      },
+      {
+        path: "announcements",
+        element: <AnnouncementPage />,
       },
     ],
   },

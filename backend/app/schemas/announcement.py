@@ -10,7 +10,7 @@ class AnnouncementCreate(BaseModel):
     title: str = Field(..., min_length=5, max_length=255)
     summary: str = Field(..., min_length=10, max_length=500)
     content: str = Field(..., min_length=20)
-    image: str
+    
 
 
 class AnnouncementUpdate(BaseModel):
@@ -18,7 +18,7 @@ class AnnouncementUpdate(BaseModel):
     summary: str = Field(..., min_length=10, max_length=500)
     content: str = Field(..., min_length=20)
 
-    image: str
+    
     is_published: bool
 
 class AnnouncementResponse(BaseModel):
@@ -27,7 +27,7 @@ class AnnouncementResponse(BaseModel):
     slug: str
     summary: str
     content: str
-    image: str
+    
     is_published: bool
     published_at: datetime
     created_at: datetime

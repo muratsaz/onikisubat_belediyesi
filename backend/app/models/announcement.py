@@ -24,7 +24,7 @@ class Announcement(Base):
 
     content = Column(Text, nullable=False)
 
-    image = Column(String(255))
+    
 
     is_published = Column(
         Boolean,
