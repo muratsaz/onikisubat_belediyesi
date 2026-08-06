@@ -3,7 +3,7 @@ import { Bell, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import api from "../../services/api";
-import ContentModal from "../common/ContentModal/ContentModal";
+import AnnouncementModal from "../common/AnnouncementModal/AnnouncementModal";
 
 const AnnouncementSection = () => {
   const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -49,6 +49,8 @@ const AnnouncementSection = () => {
     setCurrentIndex(index);
   };
 
+  const visibleAnnouncements = announcements.slice(0, 4);
+
   if (announcements.length === 0) {
     return null;
   }
@@ -85,7 +87,7 @@ const AnnouncementSection = () => {
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col gap-3 lg:gap-4">
-            {announcements.map((item, index) => (
+            {visibleAnnouncements.map((item, index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -125,13 +127,13 @@ const AnnouncementSection = () => {
         </div>
       </section>
 
-      <ContentModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        news={announcements}
-        currentIndex={currentIndex}
-        onNavigate={handleNavigate}
-      />
+      <AnnouncementModal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  announcements={announcements}
+  currentIndex={currentIndex}
+  onNavigate={handleNavigate}
+/>    
     </>
   );
 };

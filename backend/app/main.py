@@ -17,8 +17,14 @@ from app.models.tender import Tender
 from app.models.tender_document import TenderDocument
 from app.models.contact_message import ContactMessage
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.api import upload,announcement,event,gallery
+from app.models.project import Project
+from app.api import (
+    upload,
+    announcement,
+    event,
+    gallery,
+    project,
+)
 
 
 
@@ -39,7 +45,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-#Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 app.include_router(user_router)
 app.include_router(news_router)
@@ -47,6 +53,7 @@ app.include_router(upload.router)
 app.include_router(announcement.router)
 app.include_router(event.router)
 app.include_router(gallery.router)
+app.include_router(project.router)
 app.include_router(dashboard_router)
 app.include_router(page_router)
 app.include_router(tender.router)

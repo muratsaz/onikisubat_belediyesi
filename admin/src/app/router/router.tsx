@@ -6,7 +6,7 @@ import DashboardPage from "../../pages/Dashboard/DashboardPage";
 import LoginPage from "../../pages/Login/LoginPage";
 import NewsPage from "../../pages/News/NewsPage";
 import AnnouncementPage from "../../pages/Announcements/AnnouncementPage";
-
+import ProjectPage from "../../pages/Projects/ProjectPage";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -23,6 +23,10 @@ export const router = createBrowserRouter([
       {
         path: "announcements",
         element: <AnnouncementPage />,
+      },
+      {
+        path: "projects",
+        element: <ProjectPage />,
       },
     ],
   },

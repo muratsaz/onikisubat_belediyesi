@@ -40,6 +40,7 @@ def validate_module(module: str) -> None:
         "events",
         "gallery",
         "mayor",
+        "projects",
     }
 
     if module not in allowed_modules:
