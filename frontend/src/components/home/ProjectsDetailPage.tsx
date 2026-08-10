@@ -10,8 +10,8 @@ import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 // 1. ÇÖZÜM: Dosya yolları bir üst dizine daha çıkacak şekilde (../../) güncellendi
-import PageHeader from "../../components/common/PageHeader";
-import { projectData } from "../../components/projects/projectData";
+import PageHeader from "../common/PageHeader";
+import { projectData } from "../projects/projectData";
 
 const ProjectDetailPage = () => {
   const { id } = useParams();

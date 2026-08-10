@@ -1,31 +1,97 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import PageHeader from "../components/common/PageHeader";
 import TenderSearch from "../components/ihaleler/TenderSearch";
 import TenderSidebar from "../components/ihaleler/TenderSidebar";
 import TenderStats from "../components/ihaleler/TenderStats";
-import TenderTable from "../components/ihaleler/TenderTable";
+import TenderTable, {
+  type Tender as TableTender,
+} from "../components/ihaleler/TenderTable";
 
-import { tenderData } from "../components/ihaleler/tenderData";
+import {
+  getAllTenders,
+  getTenderDocuments,
+} from "../services/tender.service";
 
 const ITEMS_PER_PAGE = 5;
 
 const TendersPage = () => {
+  const [tenders, setTenders] = useState<TableTender[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Sonraki adımda kullanılacak
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<
     "all" | "open" | "closed"
   >("all");
 
+  const loadTenders = async () => {
+    try {
+      const response = await getAllTenders();
+
+      const formatted: TableTender[] = await Promise.all(
+        response.map(async (item) => {
+          let pdf = "";
+
+          try {
+            const documents = await getTenderDocuments(
+              item.id
+            );
+
+            if (documents.length > 0) {
+              pdf = `http://127.0.0.1:8000${documents[0].file_path}`;
+            }
+          } catch (error) {
+            console.error(
+              `İhale ${item.id} belgeleri alınamadı:`,
+              error
+            );
+          }
+
+          return {
+            id: item.id,
+            title: item.title,
+            department: "-",
+            publishDate: new Date(
+              item.publish_date
+            ).toLocaleDateString("tr-TR"),
+            deadline: new Date(
+              item.deadline
+            ).toLocaleDateString("tr-TR"),
+            status:
+              item.status === "ACTIVE"
+                ? "Açık"
+                : "Sonuçlandı",
+            tenderNo: item.tender_number,
+            method: "-",
+            budget: "-",
+            location: "-",
+            description: item.description ?? "",
+            pdf,
+          };
+        })
+      );
+
+      setTenders(formatted);
+    } catch (error) {
+      console.error("İhaleler yüklenemedi:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadTenders();
+  }, []);
+
   const filteredTenders = useMemo(() => {
-    return tenderData.filter((item) => {
+    return tenders.filter((item) => {
+      const searchValue = search.toLowerCase();
+
       const matchesSearch =
-        item.title.toLowerCase().includes(search.toLowerCase()) ||
+        item.title.toLowerCase().includes(searchValue) ||
         item.department
           .toLowerCase()
-          .includes(search.toLowerCase());
+          .includes(searchValue) ||
+        item.tenderNo
+          .toLowerCase()
+          .includes(searchValue);
 
       const matchesFilter =
         filter === "all"
@@ -36,13 +102,13 @@ const TendersPage = () => {
 
       return matchesSearch && matchesFilter;
     });
-  }, [search, filter]);
+  }, [search, filter, tenders]);
 
-  const openCount = tenderData.filter(
+  const openCount = tenders.filter(
     (item) => item.status === "Açık"
   ).length;
 
-  const closedCount = tenderData.filter(
+  const closedCount = tenders.filter(
     (item) => item.status === "Sonuçlandı"
   ).length;
 
@@ -51,7 +117,8 @@ const TendersPage = () => {
   );
 
   const currentTenders = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const start =
+      (currentPage - 1) * ITEMS_PER_PAGE;
 
     return filteredTenders.slice(
       start,
@@ -59,21 +126,27 @@ const TendersPage = () => {
     );
   }, [currentPage, filteredTenders]);
 
+  useEffect(() => {
+    if (
+      totalPages > 0 &&
+      currentPage > totalPages
+    ) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   return (
     <>
-      <PageHeader
-        title="İhaleler"
-        section="Hızlı Erişim"
-        description="Belediyemize ait açık ve sonuçlanan ihale ilanlarını inceleyebilir, şartnameleri görüntüleyebilir ve ihale detaylarına ulaşabilirsiniz."
-      />
-
       <section className="bg-slate-100 py-16">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
           <div className="grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
             <div className="self-start">
               <TenderSidebar
                 filter={filter}
-                setFilter={setFilter}
+                setFilter={(value) => {
+                  setFilter(value);
+                  setCurrentPage(1);
+                }}
               />
             </div>
 
@@ -84,20 +157,23 @@ const TendersPage = () => {
                 </h1>
 
                 <p className="mt-4 max-w-4xl text-lg leading-8 text-slate-600">
-                  Belediyemize ait açık ve sonuçlanan ihale
-                  ilanlarını inceleyebilir, şartname dosyalarını
-                  görüntüleyebilir ve ihale detaylarına
-                  ulaşabilirsiniz.
+                  Belediyemize ait açık ve sonuçlanan
+                  ihale ilanlarını inceleyebilir,
+                  şartname dosyalarını görüntüleyebilir
+                  ve ihale detaylarına ulaşabilirsiniz.
                 </p>
               </div>
 
               <TenderSearch
                 value={search}
-                onChange={setSearch}
+                onChange={(value) => {
+                  setSearch(value);
+                  setCurrentPage(1);
+                }}
               />
 
               <TenderStats
-                total={tenderData.length}
+                total={tenders.length}
                 open={openCount}
                 closed={closedCount}
               />
@@ -113,22 +189,26 @@ const TendersPage = () => {
               </div>
 
               <div className="mt-6">
-                <TenderTable tenders={currentTenders} />
+                <TenderTable
+                  tenders={currentTenders}
+                />
               </div>
 
-              <div className="mt-10 flex items-center justify-center gap-3">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() =>
-                    setCurrentPage((p) => p - 1)
-                  }
-                  className="rounded-xl border border-slate-300 px-5 py-2 font-semibold transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Önceki
-                </button>
+              {totalPages > 0 && (
+                <div className="mt-10 flex items-center justify-center gap-3">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() =>
+                      setCurrentPage((p) => p - 1)
+                    }
+                    className="rounded-xl border border-slate-300 px-5 py-2 font-semibold transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Önceki
+                  </button>
 
-                {Array.from({ length: totalPages }).map(
-                  (_, index) => {
+                  {Array.from({
+                    length: totalPages,
+                  }).map((_, index) => {
                     const page = index + 1;
 
                     return (
@@ -146,22 +226,21 @@ const TendersPage = () => {
                         {page}
                       </button>
                     );
-                  }
-                )}
+                  })}
 
-                <button
-                  disabled={
-                    currentPage === totalPages ||
-                    totalPages === 0
-                  }
-                  onClick={() =>
-                    setCurrentPage((p) => p + 1)
-                  }
-                  className="rounded-xl border border-slate-300 px-5 py-2 font-semibold transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Sonraki
-                </button>
-              </div>
+                  <button
+                    disabled={
+                      currentPage === totalPages
+                    }
+                    onClick={() =>
+                      setCurrentPage((p) => p + 1)
+                    }
+                    className="rounded-xl border border-slate-300 px-5 py-2 font-semibold transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Sonraki
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

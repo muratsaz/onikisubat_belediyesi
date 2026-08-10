@@ -5,7 +5,7 @@ from app.api.news import router as news_router
 from app.api.page import router as page_router
 from app.database.database import engine
 from app.database.base import Base
-from app.api import tender, contact_message
+from app.api import tender, contact_message,tender_document
 from app.models.user import User
 from app.models.news import News
 from app.models.announcement import Announcement
@@ -57,6 +57,7 @@ app.include_router(project.router)
 app.include_router(dashboard_router)
 app.include_router(page_router)
 app.include_router(tender.router)
+app.include_router(tender_document.router)
 app.include_router(contact_message.router)
 @app.get("/")
 def root():

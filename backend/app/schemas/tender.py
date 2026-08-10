@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.tender_document import TenderDocumentResponse
+
 
 class TenderBase(BaseModel):
     title: str
@@ -29,5 +31,6 @@ class TenderResponse(TenderBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    documents: list[TenderDocumentResponse] = []
 
     model_config = ConfigDict(from_attributes=True)

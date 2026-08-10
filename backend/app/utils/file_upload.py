@@ -6,7 +6,6 @@ from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile
 
-
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
@@ -15,15 +14,18 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 UPLOAD_ROOT = BASE_DIR / "app" / "uploads"
 
-ALLOWED_EXTENSIONS = {
+IMAGE_EXTENSIONS = {
     ".jpg",
     ".jpeg",
     ".png",
     ".webp",
 }
 
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+DOCUMENT_EXTENSIONS = {
+    ".pdf",
+}
 
+MAX_FILE_SIZE = 5 * 1024 * 1024
 
 # =============================================================================
 # VALIDATION
@@ -41,6 +43,7 @@ def validate_module(module: str) -> None:
         "gallery",
         "mayor",
         "projects",
+        "tenders",
     }
 
     if module not in allowed_modules:
@@ -50,18 +53,33 @@ def validate_module(module: str) -> None:
         )
 
 
-def validate_extension(filename: str) -> str:
+def validate_extension(
+    filename: str,
+    module: str,
+) -> str:
     """
-    Dosya uzantısını doğrular.
+    Dosya uzantısını modüle göre doğrular.
     """
 
     extension = Path(filename).suffix.lower()
 
-    if extension not in ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            status_code=400,
-            detail="Sadece JPG, JPEG, PNG ve WEBP dosyaları yüklenebilir."
-        )
+    if module == "tenders":
+        allowed_extensions = DOCUMENT_EXTENSIONS
+
+        if extension not in allowed_extensions:
+            raise HTTPException(
+                status_code=400,
+                detail="İhale belgeleri için sadece PDF dosyaları yüklenebilir."
+            )
+
+    else:
+        allowed_extensions = IMAGE_EXTENSIONS
+
+        if extension not in allowed_extensions:
+            raise HTTPException(
+                status_code=400,
+                detail="Sadece JPG, JPEG, PNG ve WEBP dosyaları yüklenebilir."
+            )
 
     return extension
 
@@ -126,18 +144,14 @@ async def save_upload_file(
 ) -> dict:
     """
     Dosyayı kaydeder.
-
-    Returns:
-        {
-            filename,
-            relative_path,
-            absolute_path
-        }
     """
 
     validate_module(module)
 
-    extension = validate_extension(file.filename)
+    extension = validate_extension(
+        file.filename,
+        module,
+    )
 
     await validate_file_size(file)
 
@@ -154,7 +168,9 @@ async def save_upload_file(
 
     await file.seek(0)
 
-    relative_path = file_path.relative_to(UPLOAD_ROOT).as_posix()
+    relative_path = file_path.relative_to(
+        UPLOAD_ROOT
+    ).as_posix()
 
     return {
         "filename": filename,
