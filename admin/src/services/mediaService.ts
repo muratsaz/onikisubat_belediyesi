@@ -1,6 +1,6 @@
 import api from "./api";
 
-export type MediaCategory = "genel" | "kurumsal";
+export type MediaCategory = "genel" | "kurumsal" | "haberler" | "projeler";
 
 export interface Media {
   id: number;

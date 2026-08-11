@@ -8,6 +8,8 @@ from app.utils.file_upload import save_upload_file
 ALLOWED_CATEGORIES = {
     "genel",
     "kurumsal",
+    "haberler",
+    "projeler",
 }
 
 
@@ -16,6 +18,7 @@ async def create_media(
     file: UploadFile,
     category: str = "genel",
 ) -> Media:
+
     if category not in ALLOWED_CATEGORIES:
         raise HTTPException(
             status_code=400,

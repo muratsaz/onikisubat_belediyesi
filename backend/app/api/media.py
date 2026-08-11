@@ -7,6 +7,14 @@ from app.schemas.media import MediaResponse
 from app.services.media_service import create_media
 
 
+ALLOWED_CATEGORIES = {
+    "genel",
+    "kurumsal",
+    "haberler",
+    "projeler",
+}
+
+
 router = APIRouter(
     prefix="/media",
     tags=["Media"],
@@ -40,7 +48,7 @@ def get_all_media(
     query = db.query(Media)
 
     if category is not None:
-        if category not in {"genel", "kurumsal"}:
+        if category not in ALLOWED_CATEGORIES:
             raise HTTPException(
                 status_code=400,
                 detail="Geçersiz medya kategorisi.",

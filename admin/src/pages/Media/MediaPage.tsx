@@ -154,9 +154,20 @@ const MediaPage = () => {
   const getCategoryLabel = (
     category: MediaCategory
   ) => {
-    return category === "kurumsal"
-      ? "Kurumsal"
-      : "Genel";
+    switch (category) {
+      case "kurumsal":
+        return "Kurumsal";
+
+      case "haberler":
+        return "Haberler";
+
+      case "projeler":
+        return "Projeler";
+
+      case "genel":
+      default:
+        return "Genel";
+    }
   };
 
   return (
@@ -224,6 +235,8 @@ const MediaPage = () => {
             >
               <option value="genel">Genel</option>
               <option value="kurumsal">Kurumsal</option>
+              <option value="haberler">Haberler</option>
+              <option value="projeler">Projeler</option>
             </select>
           </div>
 
@@ -312,6 +325,34 @@ const MediaPage = () => {
             >
               Genel
             </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setActiveFilter("haberler")
+              }
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                activeFilter === "haberler"
+                  ? "bg-blue-700 text-white"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              Haberler
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setActiveFilter("projeler")
+              }
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                activeFilter === "projeler"
+                  ? "bg-blue-700 text-white"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              Projeler
+            </button>
           </div>
         </div>
 
@@ -355,6 +396,10 @@ const MediaPage = () => {
                       className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                         item.category === "kurumsal"
                           ? "bg-purple-50 text-purple-700"
+                          : item.category === "haberler"
+                          ? "bg-blue-50 text-blue-700"
+                          : item.category === "projeler"
+                          ? "bg-emerald-50 text-emerald-700"
                           : "bg-slate-100 text-slate-600"
                       }`}
                     >
