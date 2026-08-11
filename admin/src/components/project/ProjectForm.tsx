@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { Project } from "../../data/projectData";
 import { ImagePlus } from "lucide-react";
 import { uploadImage } from "../../services/uploadService";
+import MediaPicker from "../media/MediaPicker";
+import type { Media } from "../../services/mediaService";
 
 export interface ProjectFormData {
   title: string;
@@ -29,25 +31,39 @@ const ProjectForm = ({
 }: ProjectFormProps) => {
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
-  const [status, setStatus] = useState<"Planlanıyor" | "Devam Ediyor" | "Tamamlandı">("Planlanıyor");
+  const [status, setStatus] = useState<
+    "Planlanıyor" | "Devam Ediyor" | "Tamamlandı"
+  >("Planlanıyor");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
-  const [publishDate, setPublishDate] = useState(new Date().toISOString().split("T")[0]);
+  const [publishDate, setPublishDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
 
   useEffect(() => {
     if (initialData && isEditing) {
       setTitle(initialData.title ?? "");
       setLocation(initialData.location ?? "");
+
       setStatus(
-        (initialData.status as "Planlanıyor" | "Devam Ediyor" | "Tamamlandı") ?? "Planlanıyor"
+        (initialData.status as
+          | "Planlanıyor"
+          | "Devam Ediyor"
+          | "Tamamlandı") ?? "Planlanıyor"
       );
+
       setSummary(initialData.summary ?? "");
       setContent(initialData.content ?? "");
+
       setPublishDate(
-        initialData.publishDate ?? new Date().toISOString().split("T")[0]
+        initialData.publishDate ??
+          new Date().toISOString().split("T")[0]
       );
+
       setImage(initialData.image ?? "");
       setPreview(initialData.image ?? "");
     } else {
@@ -56,7 +72,9 @@ const ProjectForm = ({
       setStatus("Planlanıyor");
       setSummary("");
       setContent("");
-      setPublishDate(new Date().toISOString().split("T")[0]);
+      setPublishDate(
+        new Date().toISOString().split("T")[0]
+      );
       setImage("");
       setPreview("");
     }
@@ -69,15 +87,30 @@ const ProjectForm = ({
 
     if (!file) return;
 
-    setPreview(URL.createObjectURL(file));
+    const localPreview = URL.createObjectURL(file);
+    setPreview(localPreview);
 
     try {
-      const response = await uploadImage(file, "projects");
+      const response = await uploadImage(
+        file,
+        "projects"
+      );
+
       setImage(response.path);
     } catch (err) {
       console.error(err);
       alert("Fotoğraf yüklenemedi.");
+      setPreview("");
+      setImage("");
     }
+  };
+
+  const handleMediaSelect = (media: Media) => {
+    setImage(media.file_path);
+    setPreview(
+      `http://127.0.0.1:8000${media.file_path}`
+    );
+    setMediaPickerOpen(false);
   };
 
   const handleSubmit = () => {
@@ -119,11 +152,15 @@ const ProjectForm = ({
   };
 
   return (
-    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+    <form
+      className="space-y-6"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <div>
         <label className="mb-2 block font-medium text-slate-700">
           Proje Başlığı
         </label>
+
         <input
           type="text"
           value={title}
@@ -138,10 +175,13 @@ const ProjectForm = ({
           <label className="mb-2 block font-medium text-slate-700">
             Konum
           </label>
+
           <input
             type="text"
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={(e) =>
+              setLocation(e.target.value)
+            }
             placeholder="Proje konumu..."
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
           />
@@ -151,18 +191,30 @@ const ProjectForm = ({
           <label className="mb-2 block font-medium text-slate-700">
             Durum
           </label>
+
           <select
             value={status}
             onChange={(e) =>
               setStatus(
-                e.target.value as "Planlanıyor" | "Devam Ediyor" | "Tamamlandı"
+                e.target.value as
+                  | "Planlanıyor"
+                  | "Devam Ediyor"
+                  | "Tamamlandı"
               )
             }
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
           >
-            <option value="Planlanıyor">Planlanıyor</option>
-            <option value="Devam Ediyor">Devam Ediyor</option>
-            <option value="Tamamlandı">Tamamlandı</option>
+            <option value="Planlanıyor">
+              Planlanıyor
+            </option>
+
+            <option value="Devam Ediyor">
+              Devam Ediyor
+            </option>
+
+            <option value="Tamamlandı">
+              Tamamlandı
+            </option>
           </select>
         </div>
       </div>
@@ -171,10 +223,13 @@ const ProjectForm = ({
         <label className="mb-2 block font-medium text-slate-700">
           Yayın Tarihi
         </label>
+
         <input
           type="date"
           value={publishDate}
-          onChange={(e) => setPublishDate(e.target.value)}
+          onChange={(e) =>
+            setPublishDate(e.target.value)
+          }
           className="w-full rounded-xl border border-slate-300 px-4 py-3"
         />
       </div>
@@ -183,14 +238,48 @@ const ProjectForm = ({
         <label className="mb-2 block font-medium text-slate-700">
           Proje Fotoğrafı
         </label>
-        <label
-          htmlFor="project-image"
-          className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
-        >
-          <ImagePlus size={48} className="mb-3 text-blue-600" />
-          <p className="font-semibold text-slate-700">Proje Fotoğrafı Seç</p>
-          <p className="mt-2 text-sm text-slate-500">JPG, PNG veya WEBP</p>
-        </label>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label
+            htmlFor="project-image"
+            className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
+          >
+            <ImagePlus
+              size={42}
+              className="mb-3 text-blue-600"
+            />
+
+            <p className="font-semibold text-slate-700">
+              Bilgisayardan Yükle
+            </p>
+
+            <p className="mt-2 text-sm text-slate-500">
+              JPG, PNG veya WEBP
+            </p>
+          </label>
+
+          <button
+            type="button"
+            onClick={() =>
+              setMediaPickerOpen(true)
+            }
+            className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
+          >
+            <ImagePlus
+              size={42}
+              className="mb-3 text-blue-600"
+            />
+
+            <p className="font-semibold text-slate-700">
+              Medyadan Seç
+            </p>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Medya kütüphanesinden seç
+            </p>
+          </button>
+        </div>
+
         <input
           id="project-image"
           type="file"
@@ -202,22 +291,37 @@ const ProjectForm = ({
         {preview && (
           <div className="mt-5">
             <img
-              src={preview}
+              src={
+                preview.startsWith("http")
+                  ? preview
+                  : `http://127.0.0.1:8000${preview}`
+              }
               alt="Önizleme"
               className="h-64 w-full rounded-2xl border object-cover"
             />
           </div>
         )}
+
+        <MediaPicker
+          isOpen={mediaPickerOpen}
+          onClose={() =>
+            setMediaPickerOpen(false)
+          }
+          onSelect={handleMediaSelect}
+        />
       </div>
 
       <div>
         <label className="mb-2 block font-medium text-slate-700">
           Proje Özeti
         </label>
+
         <textarea
           rows={4}
           value={summary}
-          onChange={(e) => setSummary(e.target.value)}
+          onChange={(e) =>
+            setSummary(e.target.value)
+          }
           placeholder="Kısa özet..."
           className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
         />
@@ -227,10 +331,13 @@ const ProjectForm = ({
         <label className="mb-2 block font-medium text-slate-700">
           Proje İçeriği
         </label>
+
         <textarea
           rows={10}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) =>
+            setContent(e.target.value)
+          }
           placeholder="Proje içeriğini yazın..."
           className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
         />

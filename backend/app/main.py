@@ -24,8 +24,9 @@ from app.api import (
     event,
     gallery,
     project,
+    media,
 )
-
+from app.models.media import Media
 
 
 app = FastAPI(
@@ -54,6 +55,7 @@ app.include_router(announcement.router)
 app.include_router(event.router)
 app.include_router(gallery.router)
 app.include_router(project.router)
+app.include_router(media.router)
 app.include_router(dashboard_router)
 app.include_router(page_router)
 app.include_router(tender.router)

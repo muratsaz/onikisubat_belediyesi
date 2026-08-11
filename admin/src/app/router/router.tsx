@@ -8,6 +8,7 @@ import NewsPage from "../../pages/News/NewsPage";
 import AnnouncementPage from "../../pages/Announcements/AnnouncementPage";
 import ProjectPage from "../../pages/Projects/ProjectPage";
 import TenderPage from "../../pages/Tenders/TenderPage";
+import MediaPage from "../../pages/Media/MediaPage";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
       {
         path: "tenders",
         element: <TenderPage />,
+      },
+      {
+        path: "media",
+        element: <MediaPage />,
       },
     ],
   },

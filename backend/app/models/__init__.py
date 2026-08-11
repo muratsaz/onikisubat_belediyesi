@@ -7,3 +7,4 @@ from app.models.page import Page
 from app.models.tender import Tender
 from app.models.tender_document import TenderDocument
 from app.models.user import User
+from app.models.media import Media

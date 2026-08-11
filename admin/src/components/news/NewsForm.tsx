@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { News } from "../../data/newsData";
 import { ImagePlus } from "lucide-react";
 import { uploadImage } from "../../services/uploadService";
+import MediaPicker from "../media/MediaPicker";
+import type { Media } from "../../services/mediaService";
 
 export interface NewsFormData {
   title: string;
@@ -53,6 +55,9 @@ const NewsForm = ({
 
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [selectedMedia, setSelectedMedia] =
+    useState<Media | null>(null);
 
   useEffect(() => {
     if (initialData && isEditing) {
@@ -62,12 +67,15 @@ const NewsForm = ({
       setSummary(initialData.summary ?? "");
       setContent(initialData.content ?? "");
       setAuthor(initialData.author ?? "Admin");
+
       setPublishDate(
         initialData.publishDate ??
           new Date().toISOString().split("T")[0]
       );
+
       setImage(initialData.image ?? "");
       setPreview(initialData.image ?? "");
+      setSelectedMedia(null);
     } else {
       setTitle("");
       setCategory("");
@@ -75,11 +83,14 @@ const NewsForm = ({
       setSummary("");
       setContent("");
       setAuthor("Admin");
+
       setPublishDate(
         new Date().toISOString().split("T")[0]
       );
+
       setImage("");
       setPreview("");
+      setSelectedMedia(null);
     }
   }, [initialData, isEditing]);
 
@@ -90,7 +101,30 @@ const NewsForm = ({
 
     if (!file) return;
 
-    setPreview(URL.createObjectURL(file));
+    if (
+      ![
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+      ].includes(file.type)
+    ) {
+      alert(
+        "Sadece JPG, JPEG ve WEBP dosyaları yüklenebilir."
+      );
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Dosya boyutu maksimum 5 MB olabilir.");
+      e.target.value = "";
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+
+    setPreview(objectUrl);
+    setSelectedMedia(null);
 
     try {
       const response = await uploadImage(
@@ -99,14 +133,33 @@ const NewsForm = ({
       );
 
       setImage(response.path);
-
-      console.log(response);
-
     } catch (err) {
       console.error(err);
 
+      URL.revokeObjectURL(objectUrl);
+      setPreview("");
+      setImage("");
+
       alert("Fotoğraf yüklenemedi.");
     }
+  };
+
+  const handleMediaSelect = (media: Media) => {
+    setSelectedMedia(media);
+
+    setImage(media.file_path);
+
+    setPreview(
+      `http://127.0.0.1:8000${media.file_path}`
+    );
+
+    setMediaPickerOpen(false);
+  };
+
+  const clearSelectedImage = () => {
+    setImage("");
+    setPreview("");
+    setSelectedMedia(null);
   };
 
   const handleSubmit = () => {
@@ -169,7 +222,9 @@ const NewsForm = ({
 
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) =>
+              setCategory(e.target.value)
+            }
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
           >
             <option value="">
@@ -193,13 +248,20 @@ const NewsForm = ({
             value={status}
             onChange={(e) =>
               setStatus(
-                e.target.value as "Taslak" | "Yayında"
+                e.target.value as
+                  | "Taslak"
+                  | "Yayında"
               )
             }
             className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
           >
-            <option value="Taslak">Taslak</option>
-            <option value="Yayında">Yayında</option>
+            <option value="Taslak">
+              Taslak
+            </option>
+
+            <option value="Yayında">
+              Yayında
+            </option>
           </select>
         </div>
       </div>
@@ -213,7 +275,9 @@ const NewsForm = ({
           <input
             type="text"
             value={author}
-            onChange={(e) => setAuthor(e.target.value)}
+            onChange={(e) =>
+              setAuthor(e.target.value)
+            }
             className="w-full rounded-xl border border-slate-300 px-4 py-3"
           />
         </div>
@@ -239,42 +303,95 @@ const NewsForm = ({
           Kapak Fotoğrafı
         </label>
 
-        <label
-          htmlFor="news-image"
-          className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
-        >
-          <ImagePlus
-            size={48}
-            className="mb-3 text-blue-600"
-          />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label
+            htmlFor="news-image"
+            className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
+          >
+            <ImagePlus
+              size={42}
+              className="mb-3 text-blue-600"
+            />
 
-          <p className="font-semibold text-slate-700">
-            Kapak Fotoğrafı Seç
-          </p>
+            <p className="font-semibold text-slate-700">
+              Bilgisayardan Yükle
+            </p>
 
-          <p className="mt-2 text-sm text-slate-500">
-            JPG, PNG veya WEBP
-          </p>
-        </label>
+            <p className="mt-2 text-sm text-slate-500">
+              JPG, PNG veya WEBP
+            </p>
+          </label>
+
+          <button
+            type="button"
+            onClick={() =>
+              setMediaPickerOpen(true)
+            }
+            className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-500 hover:bg-blue-50"
+          >
+            <ImagePlus
+              size={42}
+              className="mb-3 text-blue-600"
+            />
+
+            <p className="font-semibold text-slate-700">
+              Medyadan Seç
+            </p>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Medya kütüphanesinden seç
+            </p>
+          </button>
+        </div>
 
         <input
           id="news-image"
           type="file"
-          accept="image/*"
+          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
           onChange={handleImageChange}
           className="hidden"
         />
 
         {preview && (
-          <div className="mt-5">
+          <div className="relative mt-5">
             <img
-              src={preview}
+              src={
+                preview.startsWith("http")
+                  ? preview
+                  : `http://127.0.0.1:8000${preview}`
+              }
               alt="Önizleme"
               className="h-64 w-full rounded-2xl border object-cover"
             />
+
+            <button
+              type="button"
+              onClick={clearSelectedImage}
+              className="absolute right-3 top-3 rounded-xl bg-black/70 px-3 py-2 text-sm font-medium text-white transition hover:bg-black"
+            >
+              Fotoğrafı Kaldır
+            </button>
+
+            {selectedMedia && (
+              <div className="mt-2 text-sm text-slate-500">
+                Medya kütüphanesinden seçildi:{" "}
+                <span className="font-medium">
+                  {selectedMedia.file_name}
+                </span>
+              </div>
+            )}
           </div>
         )}
+
+        <MediaPicker
+          isOpen={mediaPickerOpen}
+          onClose={() =>
+            setMediaPickerOpen(false)
+          }
+          onSelect={handleMediaSelect}
+        />
       </div>
+
       <div>
         <label className="mb-2 block font-medium text-slate-700">
           Haber Özeti
@@ -283,7 +400,9 @@ const NewsForm = ({
         <textarea
           rows={4}
           value={summary}
-          onChange={(e) => setSummary(e.target.value)}
+          onChange={(e) =>
+            setSummary(e.target.value)
+          }
           placeholder="Kısa özet..."
           className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
         />
@@ -297,7 +416,9 @@ const NewsForm = ({
         <textarea
           rows={10}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) =>
+            setContent(e.target.value)
+          }
           placeholder="Haber içeriğini yazın..."
           className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
         />

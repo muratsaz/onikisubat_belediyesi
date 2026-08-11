@@ -44,6 +44,7 @@ def validate_module(module: str) -> None:
         "mayor",
         "projects",
         "tenders",
+        "media",
     }
 
     if module not in allowed_modules:
@@ -176,4 +177,5 @@ async def save_upload_file(
         "filename": filename,
         "relative_path": relative_path,
         "absolute_path": str(file_path),
+        "file_size": len(contents),
     }
