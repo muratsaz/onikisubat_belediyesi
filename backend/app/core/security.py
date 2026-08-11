@@ -15,6 +15,7 @@ pwd_context = CryptContext(
     deprecated="auto"
 )
 
+
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/users/login"
 )
@@ -61,11 +62,16 @@ def authenticate_user(
 ):
     from app.models.user import User
 
-    user = db.query(User).filter(
-        User.email == email
-    ).first()
+    user = (
+        db.query(User)
+        .filter(User.email == email)
+        .first()
+    )
 
     if user is None:
+        return None
+
+    if not user.is_active:
         return None
 
     if not verify_password(
@@ -103,12 +109,20 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    user = db.query(User).filter(
-        User.email == email
-    ).first()
+    user = (
+        db.query(User)
+        .filter(User.email == email)
+        .first()
+    )
 
     if user is None:
         raise credentials_exception
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Kullanıcı hesabı pasif."
+        )
 
     return user
 
@@ -120,6 +134,18 @@ def require_admin(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem için admin yetkisi gerekiyor."
+        )
+
+    return current_user
+
+
+def require_superadmin(
+    current_user=Depends(get_current_user)
+):
+    if not current_user.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu işlem için superadmin yetkisi gerekiyor."
         )
 
     return current_user

@@ -1,13 +1,36 @@
-from fastapi import UploadFile
+from pathlib import Path
+from uuid import uuid4
+
+from fastapi import HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
-from app.models.media import Media
-from app.utils.file_upload import save_upload_file
+
+BASE_UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads"
 
 
-MODULE_MEDIA_CATEGORIES = {
-    "news": "haberler",
-    "projects": "projeler",
+ALLOWED_MODULES = {
+    "news",
+    "projects",
+    "announcement",
+    "event",
+    "gallery",
+    "mayor",
+    "media",
+    "tenders",
+}
+
+
+ALLOWED_EXTENSIONS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".gif",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
 }
 
 
@@ -15,37 +38,87 @@ async def upload_file(
     db: Session,
     file: UploadFile,
     module: str,
-) -> dict:
-    """
-    Dosyayı yükler.
+):
+    module = module.lower().strip()
 
-    Haber ve proje görselleri ayrıca Media tablosuna kaydedilir.
-    """
-
-    result = await save_upload_file(
-        file=file,
-        module=module,
-    )
-
-    media_category = MODULE_MEDIA_CATEGORIES.get(module)
-
-    if media_category:
-        media = Media(
-            file_name=result["filename"],
-            file_path=f"/uploads/{result['relative_path']}",
-            category=media_category,
-            mime_type=file.content_type,
-            file_size=result["file_size"],
+    if module not in ALLOWED_MODULES:
+        raise HTTPException(
+            status_code=400,
+            detail="Geçersiz upload modülü."
         )
 
-        db.add(media)
-        db.commit()
-        db.refresh(media)
+    if not file.filename:
+        raise HTTPException(
+            status_code=400,
+            detail="Dosya seçilmedi."
+        )
+
+    extension = Path(file.filename).suffix.lower()
+
+    if extension not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail="Bu dosya türüne izin verilmiyor."
+        )
+
+    from datetime import datetime
+
+    now = datetime.now()
+
+    upload_dir = (
+        BASE_UPLOAD_DIR
+        / module
+        / str(now.year)
+        / f"{now.month:02d}"
+    )
+
+    upload_dir.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    unique_filename = (
+        f"{uuid4().hex}{extension}"
+    )
+
+    file_path = upload_dir / unique_filename
+
+    try:
+        content = await file.read()
+
+        if not content:
+            raise HTTPException(
+                status_code=400,
+                detail="Yüklenen dosya boş."
+            )
+
+        file_path.write_bytes(content)
+
+    except HTTPException:
+        raise
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="Dosya yüklenirken bir hata oluştu."
+        ) from exc
+
+    finally:
+        await file.close()
+
+    relative_path = (
+        Path("uploads")
+        / module
+        / str(now.year)
+        / f"{now.month:02d}"
+        / unique_filename
+    )
 
     return {
-        "success": True,
         "message": "Dosya başarıyla yüklendi.",
-        "filename": result["filename"],
-        "path": f"/uploads/{result['relative_path']}",
-        "url": f"http://localhost:8000/uploads/{result['relative_path']}",
+        "filename": unique_filename,
+        "original_filename": file.filename,
+        "module": module,
+        "path": relative_path.as_posix(),
+        "url": f"/{relative_path.as_posix()}",
     }
