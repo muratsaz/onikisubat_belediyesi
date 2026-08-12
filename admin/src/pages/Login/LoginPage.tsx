@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { login, saveToken } from "../../services/authService";
+import {
+  login,
+  saveToken,
+  getCurrentUser,
+  saveCurrentUser,
+} from "../../services/authService";
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState("");
 
   const handleLogin = async (
@@ -20,7 +23,6 @@ const LoginPage = () => {
     e.preventDefault();
 
     setError("");
-
     setLoading(true);
 
     try {
@@ -31,10 +33,19 @@ const LoginPage = () => {
 
       saveToken(response.access_token);
 
+      const currentUser = await getCurrentUser();
+
+      saveCurrentUser(currentUser);
+
       navigate("/");
     } catch (err: any) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("currentUser");
+
       if (err.response?.status === 401) {
         setError("E-posta veya şifre hatalı.");
+      } else if (err.response?.status === 403) {
+        setError("Bu hesaba erişim izni yok.");
       } else {
         setError("Sunucuya bağlanılamadı.");
       }
@@ -72,6 +83,7 @@ const LoginPage = () => {
               }
               className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
               placeholder="admin@mail.com"
+              required
             />
           </div>
 
@@ -88,6 +100,7 @@ const LoginPage = () => {
               }
               className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-600"
               placeholder="********"
+              required
             />
           </div>
 

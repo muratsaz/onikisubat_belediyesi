@@ -16,48 +16,54 @@ const PageHeader = ({
 }: PageHeaderProps) => {
   return (
     <section
-      className="relative flex h-[360px] items-center overflow-hidden"
+      className="relative flex h-[260px] items-center overflow-hidden"
       style={{
         backgroundImage: `url(${image})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="absolute inset-0 bg-slate-900/70" />
+      {/* Arka plan karartması */}
+      <div className="absolute inset-0 bg-slate-900/75" />
 
-      <div className="relative mx-auto w-full max-w-7xl px-4 lg:px-6">
+      {/* İçerik */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 lg:px-6">
         <div className="max-w-3xl">
 
-          <div className="mb-6 flex items-center gap-2 text-sm text-white/90">
-
+          {/* Breadcrumb */}
+          <div className="mb-4 flex items-center gap-2 text-sm text-white/80">
             <Link
               to="/"
-              className="flex items-center gap-2 hover:text-blue-300"
+              className="flex items-center gap-2 transition-colors hover:text-blue-300"
             >
-              <Home size={16} />
+              <Home size={15} />
               Ana Sayfa
             </Link>
 
             {section && (
               <>
-                <ChevronRight size={16} />
-                <span>{section}</span>
+                <ChevronRight size={15} />
+
+                <span>
+                  {section}
+                </span>
               </>
             )}
 
-            <ChevronRight size={16} />
+            <ChevronRight size={15} />
 
-            <span className="font-semibold">
+            <span className="font-semibold text-white">
               {title}
             </span>
-
           </div>
 
-          <h1 className="text-5xl font-black text-white lg:text-6xl">
+          {/* Tek başlık */}
+          <h1 className="text-4xl font-black text-white lg:text-5xl">
             {title}
           </h1>
 
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-white/90">
+          {/* Açıklama */}
+          <p className="mt-3 max-w-2xl text-base leading-7 text-white/85">
             {description}
           </p>
 

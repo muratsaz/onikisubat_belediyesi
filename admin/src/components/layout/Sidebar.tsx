@@ -1,9 +1,31 @@
 import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { sidebarMenu } from "../../data/sidebarMenu";
 import SidebarItem from "./SidebarItem";
+import {
+  getCurrentUserFromStorage,
+  logout,
+} from "../../services/authService";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const currentUser = getCurrentUserFromStorage();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  const visibleMenuItems = sidebarMenu.filter((item) => {
+    if (item.superadminOnly) {
+      return currentUser?.is_superadmin === true;
+    }
+
+    return true;
+  });
+
   return (
     <aside className="flex h-screen w-72 flex-col border-r border-slate-200 bg-white shadow-sm">
 
@@ -21,7 +43,7 @@ const Sidebar = () => {
 
       <nav className="flex-1 overflow-y-auto p-4">
         <ul className="space-y-2">
-          {sidebarMenu.map((item) => (
+          {visibleMenuItems.map((item) => (
             <SidebarItem
               key={item.title}
               title={item.title}
@@ -35,7 +57,10 @@ const Sidebar = () => {
       {/* Footer */}
 
       <div className="border-t border-slate-200 bg-slate-50 p-4">
-        <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-red-200 px-4 py-3 font-medium text-red-600 transition-all duration-200 hover:bg-red-50 hover:border-red-300">
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-red-200 px-4 py-3 font-medium text-red-600 transition-all duration-200 hover:border-red-300 hover:bg-red-50"
+        >
           <LogOut size={20} />
           Çıkış Yap
         </button>

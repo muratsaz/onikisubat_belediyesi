@@ -14,50 +14,14 @@ from app.core.security import (
 
 
 # =========================================================
-# CREATE USER
-# =========================================================
-
-def create_user(
-    db: Session,
-    user: UserCreate
-):
-    existing_user = (
-        db.query(User)
-        .filter(
-            (User.username == user.username)
-            | (User.email == user.email)
-        )
-        .first()
-    )
-
-    if existing_user:
-        raise HTTPException(
-            status_code=400,
-            detail="Bu kullanıcı adı veya e-posta zaten kayıtlı."
-        )
-
-    hashed_password = hash_password(
-        user.password
-    )
-
-    new_user = User(
-        username=user.username,
-        email=user.email,
-        password=hashed_password,
-        is_admin=False,
-        is_superadmin=False,
-        is_active=True,
-    )
-
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return new_user
-
-
-# =========================================================
 # CREATE ADMIN USER
+#
+# SADECE SUPERADMIN TARAFINDAN ÇAĞRILIR
+#
+# Yeni oluşturulan kullanıcı:
+# is_admin = True
+# is_superadmin = False
+# is_active = True
 # =========================================================
 
 def create_admin_user(
@@ -79,14 +43,10 @@ def create_admin_user(
             detail="Bu kullanıcı adı veya e-posta zaten kayıtlı."
         )
 
-    hashed_password = hash_password(
-        user.password
-    )
-
     new_user = User(
         username=user.username,
         email=user.email,
-        password=hashed_password,
+        password=hash_password(user.password),
         is_admin=True,
         is_superadmin=False,
         is_active=True,
@@ -130,6 +90,13 @@ def get_user_by_id(
 
 # =========================================================
 # UPDATE USER
+#
+# SUPERADMIN:
+# - Admin yetkisi verebilir/alabilir.
+# - SuperAdmin yapabilir.
+# - SuperAdmin yetkisini kaldırabilir.
+# - Son SuperAdmin'in yetkisini kaldıramaz.
+# - Son SuperAdmin'i pasif yapamaz.
 # =========================================================
 
 def update_user(
@@ -206,13 +173,67 @@ def update_user(
     # -----------------------------------------------------
 
     if user_data.is_superadmin is not None:
+
+        # SuperAdmin yetkisi kaldırılmak isteniyor.
+        if (
+            user.is_superadmin
+            and user_data.is_superadmin is False
+        ):
+
+            # Bu kullanıcı haricinde başka bir
+            # SuperAdmin var mı?
+            another_superadmin = (
+                db.query(User)
+                .filter(
+                    User.is_superadmin == True,
+                    User.id != user.id
+                )
+                .first()
+            )
+
+            # Başka SuperAdmin yoksa bu son SuperAdmin'dir.
+            if another_superadmin is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Sistemde en az bir SuperAdmin bulunmalıdır. Son SuperAdmin'in yetkisi kaldırılamaz."
+                )
+
         user.is_superadmin = user_data.is_superadmin
+
+        # SuperAdmin aynı zamanda admin olarak kalır.
+        if user.is_superadmin:
+            user.is_admin = True
 
     # -----------------------------------------------------
     # ACTIVE
     # -----------------------------------------------------
 
     if user_data.is_active is not None:
+
+        # Son SuperAdmin pasif yapılamaz.
+        if (
+            user.is_superadmin
+            and user_data.is_active is False
+        ):
+
+            # Bu kullanıcı haricinde başka aktif SuperAdmin
+            # bulunup bulunmadığını kontrol ediyoruz.
+            another_superadmin = (
+                db.query(User)
+                .filter(
+                    User.is_superadmin == True,
+                    User.id != user.id,
+                    User.is_active == True
+                )
+                .first()
+            )
+
+            if another_superadmin is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Sistemde aktif en az bir SuperAdmin bulunmalıdır. Son aktif SuperAdmin pasif duruma getirilemez."
+                )
+
         user.is_active = user_data.is_active
 
     db.commit()
@@ -241,6 +262,31 @@ def set_user_active(
             detail="Kullanıcı bulunamadı."
         )
 
+    # -----------------------------------------------------
+    # SON SUPERADMIN KONTROLÜ
+    # -----------------------------------------------------
+
+    if (
+        user.is_superadmin
+        and not is_active
+    ):
+
+        another_superadmin = (
+            db.query(User)
+            .filter(
+                User.is_superadmin == True,
+                User.id != user.id,
+                User.is_active == True
+            )
+            .first()
+        )
+
+        if another_superadmin is None:
+            raise HTTPException(
+                status_code=400,
+                detail="Sistemde aktif en az bir SuperAdmin bulunmalıdır. Son aktif SuperAdmin pasif duruma getirilemez."
+            )
+
     user.is_active = is_active
 
     db.commit()
@@ -251,6 +297,12 @@ def set_user_active(
 
 # =========================================================
 # DELETE USER
+#
+# SUPERADMIN:
+# - Admin silebilir.
+# - Başka SuperAdmin silebilir.
+# - Kendini silemez.
+# - Sistemdeki son SuperAdmin silinemez.
 # =========================================================
 
 def delete_user(
@@ -269,19 +321,43 @@ def delete_user(
             detail="Kullanıcı bulunamadı."
         )
 
-    # Kendi hesabını silemez.
+    # -----------------------------------------------------
+    # KENDİ HESABINI SİLEMEZ
+    # -----------------------------------------------------
+
     if user.id == current_user.id:
         raise HTTPException(
             status_code=400,
             detail="Kendi hesabınızı silemezsiniz."
         )
 
-    # Superadmin silinemez.
+    # -----------------------------------------------------
+    # SUPERADMIN SİLME KONTROLÜ
+    # -----------------------------------------------------
+
     if user.is_superadmin:
-        raise HTTPException(
-            status_code=400,
-            detail="Superadmin hesabı silinemez."
+
+        # Silinecek kullanıcı haricinde başka bir
+        # SuperAdmin var mı?
+        another_superadmin = (
+            db.query(User)
+            .filter(
+                User.is_superadmin == True,
+                User.id != user.id
+            )
+            .first()
         )
+
+        # Başka SuperAdmin yoksa bu son SuperAdmin'dir.
+        if another_superadmin is None:
+            raise HTTPException(
+                status_code=400,
+                detail="Sistemdeki son SuperAdmin silinemez."
+            )
+
+    # -----------------------------------------------------
+    # DELETE
+    # -----------------------------------------------------
 
     db.delete(user)
     db.commit()
@@ -291,6 +367,8 @@ def delete_user(
 
 # =========================================================
 # CHANGE OWN PASSWORD
+#
+# Admin ve SuperAdmin kendi şifresini değiştirebilir.
 # =========================================================
 
 def change_own_password(
@@ -298,7 +376,11 @@ def change_own_password(
     current_user: User,
     password_data: UserPasswordChange
 ):
-    # Mevcut şifre kontrolü
+
+    # -----------------------------------------------------
+    # MEVCUT ŞİFRE KONTROLÜ
+    # -----------------------------------------------------
+
     if not verify_password(
         password_data.current_password,
         current_user.password
@@ -308,7 +390,10 @@ def change_own_password(
             detail="Mevcut şifreniz hatalı."
         )
 
-    # Yeni şifre mevcut şifreyle aynı olamaz.
+    # -----------------------------------------------------
+    # AYNI ŞİFRE KONTROLÜ
+    # -----------------------------------------------------
+
     if (
         password_data.current_password
         == password_data.new_password
@@ -317,6 +402,10 @@ def change_own_password(
             status_code=400,
             detail="Yeni şifre mevcut şifre ile aynı olamaz."
         )
+
+    # -----------------------------------------------------
+    # YENİ ŞİFRE
+    # -----------------------------------------------------
 
     current_user.password = hash_password(
         password_data.new_password

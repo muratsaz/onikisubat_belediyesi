@@ -20,7 +20,6 @@ from app.schemas.user import (
 )
 
 from app.services.user_service import (
-    create_user,
     create_admin_user as service_create_admin_user,
     get_all_users,
     get_user_by_id,
@@ -84,24 +83,6 @@ def login(
 
 
 # =========================================================
-# PUBLIC REGISTER
-# =========================================================
-
-@router.post(
-    "/register",
-    response_model=UserResponse
-)
-def register_user(
-    user: UserCreate,
-    db: Session = Depends(get_db)
-):
-    return create_user(
-        db,
-        user
-    )
-
-
-# =========================================================
 # GET ALL USERS
 # SADECE SUPERADMIN
 # =========================================================
@@ -148,6 +129,11 @@ def get_user(
 # =========================================================
 # CREATE ADMIN USER
 # SADECE SUPERADMIN
+#
+# Yeni kullanıcı:
+# is_admin = True
+# is_superadmin = False
+# is_active = True
 # =========================================================
 
 @router.post(
@@ -168,6 +154,15 @@ def create_admin_user(
 # =========================================================
 # UPDATE USER
 # SADECE SUPERADMIN
+#
+# SuperAdmin:
+# - Admin yetkisi verebilir/alabilir.
+# - Kullanıcıyı SuperAdmin yapabilir.
+# - SuperAdmin yetkisini kaldırabilir.
+# - Kullanıcıyı aktif/pasif yapabilir.
+#
+# Son SuperAdmin'in korunması service katmanında
+# kontrol edilmektedir.
 # =========================================================
 
 @router.put(
@@ -191,7 +186,7 @@ def update_admin_user(
             detail="Kullanıcı bulunamadı."
         )
 
-    # Superadmin kendi superadmin yetkisini kaldıramaz.
+    # Kendi hesabında kritik yetki değişikliklerine izin verilmez.
     if user.id == current_user.id:
 
         if (
@@ -203,7 +198,6 @@ def update_admin_user(
                 detail="Kendi superadmin yetkinizi kaldıramazsınız."
             )
 
-        # Superadmin kendi hesabını pasif yapamaz.
         if (
             user_data.is_active is not None
             and user_data.is_active is False
@@ -223,6 +217,14 @@ def update_admin_user(
 # =========================================================
 # DELETE USER
 # SADECE SUPERADMIN
+#
+# SuperAdmin başka bir SuperAdmin'i silebilir.
+#
+# Ancak:
+# - Kendi hesabını silemez.
+# - Sistemdeki son SuperAdmin silinemez.
+#
+# Son SuperAdmin kontrolü service katmanındadır.
 # =========================================================
 
 @router.delete(
@@ -244,20 +246,14 @@ def delete_admin_user(
             detail="Kullanıcı bulunamadı."
         )
 
-    # Superadmin kendisini silemez.
+    # Kendi hesabını silemez.
     if user.id == current_user.id:
         raise HTTPException(
             status_code=400,
             detail="Kendi hesabınızı silemezsiniz."
         )
 
-    # Başka bir superadmin silinemez.
-    if user.is_superadmin:
-        raise HTTPException(
-            status_code=400,
-            detail="Superadmin hesabı silinemez."
-        )
-
+    # SuperAdmin silme kontrolü service katmanında yapılır.
     delete_user(
         db,
         user_id,
@@ -268,7 +264,19 @@ def delete_admin_user(
         "message": "Kullanıcı başarıyla silindi.",
         "user_id": user_id
     }
+# =========================================================
+# CURRENT USER
+# GİRİŞ YAPMIŞ KULLANICININ BİLGİLERİ
+# =========================================================
 
+@router.get(
+    "/me",
+    response_model=UserResponse
+)
+def get_current_user_info(
+    current_user=Depends(get_current_user)
+):
+    return current_user
 
 # =========================================================
 # CHANGE OWN PASSWORD

@@ -14,7 +14,7 @@ const PageHero = ({
   backgroundImage = "/images/municipality/belediye1.jpeg",
 }: PageHeroProps) => {
   return (
-    <section className="relative flex h-[340px] items-center overflow-hidden">
+    <section className="relative flex h-[260px] items-center overflow-hidden">
       {/* Arka Plan */}
       <img
         src={backgroundImage}
@@ -23,37 +23,35 @@ const PageHero = ({
       />
 
       {/* Karartma */}
-      <div className="absolute inset-0 bg-slate-900/70" />
+      <div className="absolute inset-0 bg-slate-950/60" />
 
       {/* İçerik */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4">
-
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 lg:px-6">
         {/* Breadcrumb */}
-
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-5 flex items-center gap-2 text-sm text-white/80"
+          className="mb-4 flex items-center gap-2 text-sm text-white/80"
         >
           <Link
             to="/"
-            className="flex items-center gap-1 hover:text-white"
+            className="flex items-center gap-1 transition-colors hover:text-white"
           >
-            <Home size={16} />
+            <Home size={15} />
             Ana Sayfa
           </Link>
 
-          <ChevronRight size={16} />
+          <ChevronRight size={15} />
 
           <Link
             to="/kurumsal"
-            className="hover:text-white"
+            className="transition-colors hover:text-white"
           >
             Kurumsal
           </Link>
 
-          <ChevronRight size={16} />
+          <ChevronRight size={15} />
 
           <span className="font-semibold text-white">
             {title}
@@ -61,27 +59,24 @@ const PageHero = ({
         </motion.div>
 
         {/* Başlık */}
-
         <motion.h1
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-5xl font-extrabold text-white"
+          className="text-4xl font-extrabold text-white"
         >
           {title}
         </motion.h1>
 
         {/* Açıklama */}
-
         <motion.p
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.6 }}
-          className="mt-4 max-w-2xl text-lg leading-8 text-slate-200"
+          className="mt-3 max-w-2xl text-base leading-7 text-slate-200"
         >
           {description}
         </motion.p>
-
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+
 import {
   LayoutDashboard,
   Newspaper,
@@ -14,6 +15,7 @@ export interface SidebarMenuItem {
   title: string;
   path: string;
   icon: LucideIcon;
+  superadminOnly?: boolean;
 }
 
 export const sidebarMenu: SidebarMenuItem[] = [
@@ -51,6 +53,7 @@ export const sidebarMenu: SidebarMenuItem[] = [
     title: "Kullanıcılar",
     path: "/users",
     icon: Users,
+    superadminOnly: true,
   },
   {
     title: "Ayarlar",

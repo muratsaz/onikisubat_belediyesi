@@ -9,6 +9,8 @@ import AnnouncementPage from "../../pages/Announcements/AnnouncementPage";
 import ProjectPage from "../../pages/Projects/ProjectPage";
 import TenderPage from "../../pages/Tenders/TenderPage";
 import MediaPage from "../../pages/Media/MediaPage";
+import UsersPage from "../../pages/Users/UsersPage";
+import SettingsPage from "../../pages/Settings/SettingsPage";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +41,14 @@ export const router = createBrowserRouter([
         path: "media",
         element: <MediaPage />,
       },
+      {
+        path: "users",
+        element: <UsersPage />,
+      },
+      {
+        path: "settings",
+        element: <SettingsPage />,
+},
     ],
   },
   {
