@@ -11,6 +11,7 @@ import TenderPage from "../../pages/Tenders/TenderPage";
 import MediaPage from "../../pages/Media/MediaPage";
 import UsersPage from "../../pages/Users/UsersPage";
 import SettingsPage from "../../pages/Settings/SettingsPage";
+import MayorPage from "../../pages/Mayor/MayorPage";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingsPage />,
+     },
+     {
+  path: "mayor",
+  element: <MayorPage />,
 },
     ],
   },

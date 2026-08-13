@@ -8,3 +8,5 @@ from app.models.tender import Tender
 from app.models.tender_document import TenderDocument
 from app.models.user import User
 from app.models.media import Media
+from app.models.mayor import Mayor
+from app.models.mayor_page import MayorPage

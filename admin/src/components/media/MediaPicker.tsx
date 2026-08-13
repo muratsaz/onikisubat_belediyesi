@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Check, Image, X } from "lucide-react";
+
 import {
   getAllMedia,
   type Media,
+  type MediaCategory,
 } from "../../services/mediaService";
 
 interface MediaPickerProps {
@@ -10,6 +12,7 @@ interface MediaPickerProps {
   onClose: () => void;
   onSelect: (media: Media) => void;
   selectedMediaId?: number | null;
+  category?: MediaCategory;
 }
 
 const API_URL = "http://127.0.0.1:8000";
@@ -19,12 +22,10 @@ const MediaPicker = ({
   onClose,
   onSelect,
   selectedMediaId = null,
+  category,
 }: MediaPickerProps) => {
   const [media, setMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(false);
-  const [category, setCategory] = useState<
-    "all" | "genel" | "kurumsal"
-  >("all");
   const [selectedId, setSelectedId] = useState<number | null>(
     selectedMediaId
   );
@@ -36,10 +37,7 @@ const MediaPicker = ({
       try {
         setLoading(true);
 
-        const data =
-          category === "all"
-            ? await getAllMedia()
-            : await getAllMedia(category);
+        const data = await getAllMedia(category);
 
         setMedia(data);
       } catch (error) {
@@ -78,7 +76,8 @@ const MediaPicker = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-        {/* Header */}
+
+        {/* HEADER */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">
@@ -99,48 +98,29 @@ const MediaPicker = ({
           </button>
         </div>
 
-        {/* Categories */}
+        {/* CATEGORY INFO */}
         <div className="border-b border-slate-200 px-6 py-4">
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setCategory("all")}
-              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-                category === "all"
-                  ? "bg-blue-700 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              Tümü
-            </button>
+          {category === "baskan" ? (
+            <div className="rounded-xl bg-blue-50 px-4 py-3">
+              <p className="text-sm font-medium text-blue-800">
+                Başkan Fotoğrafları
+              </p>
 
-            <button
-              type="button"
-              onClick={() => setCategory("genel")}
-              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-                category === "genel"
-                  ? "bg-blue-700 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              Genel
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setCategory("kurumsal")}
-              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-                category === "kurumsal"
-                  ? "bg-blue-700 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              Kurumsal
-            </button>
-          </div>
+              <p className="mt-1 text-xs text-blue-600">
+                Sadece Başkan kategorisine kaydedilmiş fotoğraflar
+                gösteriliyor.
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-xl bg-slate-50 px-4 py-3">
+              <p className="text-sm text-slate-600">
+                Medya kütüphanesinden bir görsel seçin.
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Content */}
+        {/* CONTENT */}
         <div className="min-h-0 flex-1 overflow-y-auto p-6">
           {loading ? (
             <div className="flex min-h-64 items-center justify-center text-sm text-slate-500">
@@ -151,11 +131,11 @@ const MediaPicker = ({
               <Image className="mb-3 h-12 w-12 text-slate-300" />
 
               <p className="font-medium text-slate-700">
-                Bu kategoride medya bulunamadı.
+                Başkan fotoğrafı bulunamadı.
               </p>
 
-              <p className="mt-1 text-sm text-slate-500">
-                Önce Medya bölümünden bir görsel yükleyebilirsiniz.
+              <p className="mt-1 text-center text-sm text-slate-500">
+                Önce bilgisayarınızdan bir fotoğraf yükleyebilirsiniz.
               </p>
             </div>
           ) : (
@@ -167,7 +147,9 @@ const MediaPicker = ({
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setSelectedId(item.id)}
+                    onClick={() =>
+                      setSelectedId(item.id)
+                    }
                     className={`group overflow-hidden rounded-2xl border-2 bg-white text-left transition ${
                       isSelected
                         ? "border-blue-600 shadow-lg"
@@ -209,15 +191,19 @@ const MediaPicker = ({
           )}
         </div>
 
-        {/* Footer */}
+        {/* FOOTER */}
         <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4">
-          <div className="text-sm text-slate-500">
-            {selectedMedia
-              ? `Seçilen: ${selectedMedia.file_name}`
-              : "Henüz medya seçilmedi"}
+          <div className="min-w-0 flex-1 pr-4 text-sm text-slate-500">
+            {selectedMedia ? (
+              <span className="block truncate">
+                Seçilen: {selectedMedia.file_name}
+              </span>
+            ) : (
+              "Henüz medya seçilmedi"
+            )}
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex shrink-0 gap-3">
             <button
               type="button"
               onClick={onClose}

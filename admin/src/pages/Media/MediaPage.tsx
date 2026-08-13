@@ -164,6 +164,9 @@ const MediaPage = () => {
       case "projeler":
         return "Projeler";
 
+      case "baskan":
+        return "Başkan";
+
       case "genel":
       default:
         return "Genel";
@@ -237,6 +240,7 @@ const MediaPage = () => {
               <option value="kurumsal">Kurumsal</option>
               <option value="haberler">Haberler</option>
               <option value="projeler">Projeler</option>
+              <option value="baskan">Başkan</option>
             </select>
           </div>
 
@@ -353,6 +357,20 @@ const MediaPage = () => {
             >
               Projeler
             </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setActiveFilter("baskan")
+              }
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                activeFilter === "baskan"
+                  ? "bg-blue-700 text-white"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              Başkan
+            </button>
           </div>
         </div>
 
@@ -400,6 +418,8 @@ const MediaPage = () => {
                           ? "bg-blue-50 text-blue-700"
                           : item.category === "projeler"
                           ? "bg-emerald-50 text-emerald-700"
+                          : item.category === "baskan"
+                          ? "bg-amber-50 text-amber-700"
                           : "bg-slate-100 text-slate-600"
                       }`}
                     >

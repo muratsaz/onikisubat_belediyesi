@@ -9,6 +9,7 @@ import {
   Image,
   Users,
   Settings,
+  UserRound,
 } from "lucide-react";
 
 export interface SidebarMenuItem {
@@ -48,6 +49,11 @@ export const sidebarMenu: SidebarMenuItem[] = [
     title: "Medya",
     path: "/media",
     icon: Image,
+  },
+  {
+    title: "Başkan",
+    path: "/mayor",
+    icon: UserRound,
   },
   {
     title: "Kullanıcılar",

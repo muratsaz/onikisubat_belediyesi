@@ -10,6 +10,7 @@ ALLOWED_CATEGORIES = {
     "kurumsal",
     "haberler",
     "projeler",
+    "baskan",
 }
 
 
@@ -28,6 +29,7 @@ async def create_media(
     result = await save_upload_file(
         file=file,
         module="media",
+        subdirectory=category,
     )
 
     media = Media(

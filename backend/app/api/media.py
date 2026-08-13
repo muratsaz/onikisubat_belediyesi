@@ -12,6 +12,7 @@ ALLOWED_CATEGORIES = {
     "kurumsal",
     "haberler",
     "projeler",
+    "baskan",
 }
 
 
