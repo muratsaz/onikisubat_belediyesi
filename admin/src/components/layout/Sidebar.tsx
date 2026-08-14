@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { sidebarMenu } from "../../data/sidebarMenu";
 import SidebarItem from "./SidebarItem";
+
 import {
   getCurrentUserFromStorage,
   logout,
@@ -29,7 +30,7 @@ const Sidebar = () => {
   return (
     <aside className="flex h-screen w-72 flex-col border-r border-slate-200 bg-white shadow-sm">
 
-      {/* Logo */}
+      {/* LOGO */}
 
       <div className="flex h-24 items-center justify-center border-b border-slate-200 bg-white px-6 shadow-sm">
         <img
@@ -39,7 +40,7 @@ const Sidebar = () => {
         />
       </div>
 
-      {/* Menü */}
+      {/* MENÜ */}
 
       <nav className="flex-1 overflow-y-auto p-4">
         <ul className="space-y-2">
@@ -49,15 +50,17 @@ const Sidebar = () => {
               title={item.title}
               path={item.path}
               icon={item.icon}
+              children={item.children}
             />
           ))}
         </ul>
       </nav>
 
-      {/* Footer */}
+      {/* FOOTER */}
 
       <div className="border-t border-slate-200 bg-slate-50 p-4">
         <button
+          type="button"
           onClick={handleLogout}
           className="flex w-full items-center justify-center gap-3 rounded-xl border border-red-200 px-4 py-3 font-medium text-red-600 transition-all duration-200 hover:border-red-300 hover:bg-red-50"
         >

@@ -17,6 +17,36 @@ interface MediaPickerProps {
 
 const API_URL = "http://127.0.0.1:8000";
 
+const categories: {
+  label: string;
+  value?: MediaCategory;
+}[] = [
+  {
+    label: "Tümü",
+    value: undefined,
+  },
+  {
+    label: "Kurumsal",
+    value: "kurumsal",
+  },
+  {
+    label: "Genel",
+    value: "genel",
+  },
+  {
+    label: "Haberler",
+    value: "haberler",
+  },
+  {
+    label: "Projeler",
+    value: "projeler",
+  },
+  {
+    label: "Başkan",
+    value: "baskan",
+  },
+];
+
 const MediaPicker = ({
   isOpen,
   onClose,
@@ -30,14 +60,28 @@ const MediaPicker = ({
     selectedMediaId
   );
 
+  const [selectedCategory, setSelectedCategory] = useState<
+    MediaCategory | undefined
+  >(category);
+
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return;
+    }
+
+    setSelectedCategory(category);
+  }, [isOpen, category]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
 
     const loadMedia = async () => {
       try {
         setLoading(true);
 
-        const data = await getAllMedia(category);
+        const data = await getAllMedia(selectedCategory);
 
         setMedia(data);
       } catch (error) {
@@ -49,7 +93,7 @@ const MediaPicker = ({
     };
 
     loadMedia();
-  }, [isOpen, category]);
+  }, [isOpen, selectedCategory]);
 
   useEffect(() => {
     setSelectedId(selectedMediaId ?? null);
@@ -63,6 +107,13 @@ const MediaPicker = ({
     (item) => item.id === selectedId
   );
 
+  const handleCategoryChange = (
+    newCategory: MediaCategory | undefined
+  ) => {
+    setSelectedCategory(newCategory);
+    setSelectedId(null);
+  };
+
   const handleSelect = () => {
     if (!selectedMedia) {
       alert("Lütfen bir medya seçin.");
@@ -73,12 +124,18 @@ const MediaPicker = ({
     onClose();
   };
 
+  const selectedCategoryLabel =
+    categories.find(
+      (item) => item.value === selectedCategory
+    )?.label ?? "Tümü";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div className="flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">
               Medya Seç
@@ -98,29 +155,45 @@ const MediaPicker = ({
           </button>
         </div>
 
-        {/* CATEGORY INFO */}
-        <div className="border-b border-slate-200 px-6 py-4">
-          {category === "baskan" ? (
-            <div className="rounded-xl bg-blue-50 px-4 py-3">
-              <p className="text-sm font-medium text-blue-800">
-                Başkan Fotoğrafları
-              </p>
+        {/* KATEGORİLER */}
 
-              <p className="mt-1 text-xs text-blue-600">
-                Sadece Başkan kategorisine kaydedilmiş fotoğraflar
-                gösteriliyor.
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-xl bg-slate-50 px-4 py-3">
-              <p className="text-sm text-slate-600">
-                Medya kütüphanesinden bir görsel seçin.
-              </p>
-            </div>
-          )}
+        <div className="border-b border-slate-200 px-6 py-5">
+          <div className="flex flex-wrap gap-2">
+            {categories.map((item) => {
+              const isActive =
+                selectedCategory === item.value;
+
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() =>
+                    handleCategoryChange(item.value)
+                  }
+                  className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition ${
+                    isActive
+                      ? "border-blue-600 bg-blue-600 text-white shadow-sm"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3">
+            <p className="text-sm text-slate-600">
+              <span className="font-semibold text-slate-800">
+                {selectedCategoryLabel}
+              </span>{" "}
+              kategorisindeki medyalar gösteriliyor.
+            </p>
+          </div>
         </div>
 
         {/* CONTENT */}
+
         <div className="min-h-0 flex-1 overflow-y-auto p-6">
           {loading ? (
             <div className="flex min-h-64 items-center justify-center text-sm text-slate-500">
@@ -131,11 +204,12 @@ const MediaPicker = ({
               <Image className="mb-3 h-12 w-12 text-slate-300" />
 
               <p className="font-medium text-slate-700">
-                Başkan fotoğrafı bulunamadı.
+                Bu kategoride medya bulunamadı.
               </p>
 
               <p className="mt-1 text-center text-sm text-slate-500">
-                Önce bilgisayarınızdan bir fotoğraf yükleyebilirsiniz.
+                Farklı bir kategori seçebilir veya önce medya
+                yükleyebilirsiniz.
               </p>
             </div>
           ) : (
@@ -156,6 +230,8 @@ const MediaPicker = ({
                         : "border-slate-200 hover:border-blue-300 hover:shadow-md"
                     }`}
                   >
+                    {/* IMAGE */}
+
                     <div className="relative aspect-video overflow-hidden bg-slate-100">
                       <img
                         src={`${API_URL}${item.file_path}`}
@@ -171,6 +247,8 @@ const MediaPicker = ({
                         </div>
                       )}
                     </div>
+
+                    {/* INFO */}
 
                     <div className="p-3">
                       <p
@@ -192,6 +270,7 @@ const MediaPicker = ({
         </div>
 
         {/* FOOTER */}
+
         <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4">
           <div className="min-w-0 flex-1 pr-4 text-sm text-slate-500">
             {selectedMedia ? (

@@ -16,6 +16,7 @@ from app.api import (
     media,
     mayor_page,
     mayor,
+    deputy_mayor,
 )
 
 from app.api import tender, contact_message, tender_document
@@ -36,7 +37,7 @@ from app.models.project import Project
 from app.models.media import Media
 from app.models.mayor import Mayor
 from app.models.mayor_page import MayorPage
-
+from app.models.deputy_mayor import DeputyMayor
 
 app = FastAPI(
     title="Onikişubat Belediyesi API",
@@ -81,6 +82,7 @@ app.include_router(tender.router)
 app.include_router(tender_document.router)
 app.include_router(contact_message.router)
 app.include_router(mayor.router)
+app.include_router(deputy_mayor.router)
 
 @app.get("/")
 def root():

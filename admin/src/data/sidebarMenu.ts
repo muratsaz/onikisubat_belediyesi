@@ -10,13 +10,24 @@ import {
   Users,
   Settings,
   UserRound,
+  UserCog,
+  Building2,
+  Network,
+  Target,
 } from "lucide-react";
+
+export interface SidebarMenuChild {
+  title: string;
+  path: string;
+  icon?: LucideIcon;
+}
 
 export interface SidebarMenuItem {
   title: string;
-  path: string;
+  path?: string;
   icon: LucideIcon;
   superadminOnly?: boolean;
+  children?: SidebarMenuChild[];
 }
 
 export const sidebarMenu: SidebarMenuItem[] = [
@@ -25,42 +36,81 @@ export const sidebarMenu: SidebarMenuItem[] = [
     path: "/",
     icon: LayoutDashboard,
   },
+
   {
     title: "Haberler",
     path: "/news",
     icon: Newspaper,
   },
+
   {
     title: "Duyurular",
     path: "/announcements",
     icon: Megaphone,
   },
+
   {
     title: "Projeler",
     path: "/projects",
     icon: FolderKanban,
   },
+
   {
     title: "İhaleler",
     path: "/tenders",
     icon: FileText,
   },
+
   {
     title: "Medya",
     path: "/media",
     icon: Image,
   },
+
   {
-    title: "Başkan",
-    path: "/mayor",
-    icon: UserRound,
+    title: "Kurumsal",
+    icon: Building2,
+    children: [
+      {
+        title: "Başkan",
+        path: "/mayor",
+        icon: UserRound,
+      },
+      {
+        title: "Başkan Yardımcıları",
+        path: "/kurumsal/baskan-yardimcilari",
+        icon: UserCog,
+      },
+      {
+        title: "Meclis Üyeleri",
+        path: "/kurumsal/meclis-uyeleri",
+        icon: Users,
+      },
+      {
+        title: "Müdürlükler",
+        path: "/kurumsal/mudurlukler",
+        icon: Building2,
+      },
+      {
+        title: "Organizasyon Şeması",
+        path: "/kurumsal/organizasyon-semasi",
+        icon: Network,
+      },
+      {
+        title: "Misyon & Vizyon",
+        path: "/kurumsal/misyon-vizyon",
+        icon: Target,
+      },
+    ],
   },
+
   {
     title: "Kullanıcılar",
     path: "/users",
     icon: Users,
     superadminOnly: true,
   },
+
   {
     title: "Ayarlar",
     path: "/settings",

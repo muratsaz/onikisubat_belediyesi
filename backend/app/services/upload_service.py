@@ -17,6 +17,7 @@ ALLOWED_MODULES = {
     "mayor",
     "media",
     "tenders",
+    "deputy_mayor",
 }
 
 
