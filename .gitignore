@@ -23,4 +23,4 @@ Thumbs.db
 uploads/
 
 # Alembic cache
-*.sqlite3
+*.sqlite3OnikisubatDB.bak

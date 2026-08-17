@@ -12,13 +12,14 @@ import MediaPage from "../../pages/Media/MediaPage";
 import UsersPage from "../../pages/Users/UsersPage";
 import SettingsPage from "../../pages/Settings/SettingsPage";
 import MayorPage from "../../pages/Mayor/MayorPage";
-import KurumsalPage from "../../pages/Kurumsal/KurumsalPage";
 import DeputyMayorPage from "../../pages/DeputyMayor/DeputyMayorPage";
-
+import MeclisUyeleriPage from "../../pages/Kurumsal/MeclisUyeleriPage";
+import MudurluklerPage from "../../pages/Kurumsal/MudurluklerPage";
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <AdminLayout />,
+
     children: [
       {
         index: true,
@@ -72,29 +73,29 @@ export const router = createBrowserRouter([
 
       {
         path: "kurumsal/meclis-uyeleri",
-        element: (
-          <KurumsalPage title="Meclis Üyeleri" />
-        ),
+        element: <MeclisUyeleriPage />,
       },
 
       {
-        path: "kurumsal/mudurlukler",
-        element: (
-          <KurumsalPage title="Müdürlükler" />
-        ),
-      },
+  path: "kurumsal/mudurlukler",
+  element: <MudurluklerPage />,
+},
 
       {
         path: "kurumsal/organizasyon-semasi",
         element: (
-          <KurumsalPage title="Organizasyon Şeması" />
+          <div>
+            Organizasyon Şeması
+          </div>
         ),
       },
 
       {
         path: "kurumsal/misyon-vizyon",
         element: (
-          <KurumsalPage title="Misyon & Vizyon" />
+          <div>
+            Misyon & Vizyon
+          </div>
         ),
       },
     ],

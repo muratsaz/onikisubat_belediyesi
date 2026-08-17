@@ -17,9 +17,15 @@ from app.api import (
     mayor_page,
     mayor,
     deputy_mayor,
+    council_member,
+    department,
 )
 
-from app.api import tender, contact_message, tender_document
+from app.api import (
+    tender,
+    contact_message,
+    tender_document,
+)
 
 from app.database.database import engine
 from app.database.base import Base
@@ -38,6 +44,9 @@ from app.models.media import Media
 from app.models.mayor import Mayor
 from app.models.mayor_page import MayorPage
 from app.models.deputy_mayor import DeputyMayor
+from app.models.council_member import CouncilMember
+from app.models.department import Department
+
 
 app = FastAPI(
     title="Onikişubat Belediyesi API",
@@ -74,6 +83,11 @@ app.include_router(project.router)
 app.include_router(media.router)
 
 app.include_router(mayor_page.router)
+app.include_router(mayor.router)
+app.include_router(deputy_mayor.router)
+
+app.include_router(council_member.router)
+app.include_router(department.router)
 
 app.include_router(dashboard_router)
 app.include_router(page_router)
@@ -81,8 +95,7 @@ app.include_router(page_router)
 app.include_router(tender.router)
 app.include_router(tender_document.router)
 app.include_router(contact_message.router)
-app.include_router(mayor.router)
-app.include_router(deputy_mayor.router)
+
 
 @app.get("/")
 def root():

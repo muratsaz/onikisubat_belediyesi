@@ -1,12 +1,18 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.core.config import DB_SERVER, DB_DATABASE
+from app.core.config import (
+    DB_SERVER,
+    DB_PORT,
+    DB_DATABASE,
+    DB_USER,
+    DB_PASSWORD,
+)
 
 DATABASE_URL = (
-    f"mssql+pyodbc://@{DB_SERVER}/{DB_DATABASE}"
+    f"mssql+pyodbc://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_DATABASE}"
     "?driver=ODBC+Driver+18+for+SQL+Server"
-    "&trusted_connection=yes"
+    "&Encrypt=no"
     "&TrustServerCertificate=yes"
 )
 

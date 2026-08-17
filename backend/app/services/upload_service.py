@@ -18,6 +18,8 @@ ALLOWED_MODULES = {
     "media",
     "tenders",
     "deputy_mayor",
+    "council_members",
+    "departments",
 }
 
 
