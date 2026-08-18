@@ -7,6 +7,7 @@ import {
   Plus,
   Trash2,
   Upload,
+  User,
   X,
 } from "lucide-react";
 
@@ -25,18 +26,20 @@ const API_URL = "http://127.0.0.1:8000";
 
 interface FormState {
   name: string;
+  manager_name: string;
+  manager_image: string | null;
   phone: string;
   extension: string;
   email: string;
-  image: string | null;
 }
 
 const emptyForm: FormState = {
   name: "",
+  manager_name: "",
+  manager_image: null,
   phone: "",
   extension: "",
   email: "",
-  image: null,
 };
 
 const MudurluklerPage = () => {
@@ -47,9 +50,7 @@ const MudurluklerPage = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [isMediaPickerOpen, setIsMediaPickerOpen] =
-    useState(false);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
 
   const [editingDepartment, setEditingDepartment] =
     useState<Department | null>(null);
@@ -68,10 +69,7 @@ const MudurluklerPage = () => {
 
       setDepartments(data);
     } catch (error) {
-      console.error(
-        "Müdürlükler alınamadı:",
-        error
-      );
+      console.error("Müdürlükler alınamadı:", error);
 
       alert("Müdürlükler alınamadı.");
     } finally {
@@ -89,7 +87,7 @@ const MudurluklerPage = () => {
 
   const openCreateModal = () => {
     setEditingDepartment(null);
-    setForm(emptyForm);
+    setForm({ ...emptyForm });
     setIsModalOpen(true);
   };
 
@@ -97,17 +95,16 @@ const MudurluklerPage = () => {
   // MÜDÜRLÜK DÜZENLE
   // =========================================================
 
-  const openEditModal = (
-    department: Department
-  ) => {
+  const openEditModal = (department: Department) => {
     setEditingDepartment(department);
 
     setForm({
       name: department.name,
+      manager_name: department.manager_name ?? "",
+      manager_image: department.manager_image,
       phone: department.phone ?? "",
       extension: department.extension ?? "",
       email: department.email ?? "",
-      image: department.image,
     });
 
     setIsModalOpen(true);
@@ -124,11 +121,11 @@ const MudurluklerPage = () => {
 
     setIsModalOpen(false);
     setEditingDepartment(null);
-    setForm(emptyForm);
+    setForm({ ...emptyForm });
   };
 
   // =========================================================
-  // FORM DEĞİŞİKLİKLERİ
+  // FORM DEĞİŞİKLİĞİ
   // =========================================================
 
   const handleChange = (
@@ -142,20 +139,20 @@ const MudurluklerPage = () => {
   };
 
   // =========================================================
-  // MEDYADAN GÖRSEL SEÇ
+  // MEDYA KÜTÜPHANESİNDEN FOTOĞRAF SEÇ
   // =========================================================
 
   const handleMediaSelect = (media: any) => {
     setForm((previous) => ({
       ...previous,
-      image: media.file_path,
+      manager_image: media.file_path,
     }));
 
     setIsMediaPickerOpen(false);
   };
 
   // =========================================================
-  // BİLGİSAYARDAN GÖRSEL YÜKLE
+  // BİLGİSAYARDAN FOTOĞRAF YÜKLE
   // =========================================================
 
   const handleComputerUpload = async (
@@ -183,6 +180,13 @@ const MudurluklerPage = () => {
       return;
     }
 
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Görsel boyutu maksimum 5 MB olabilir.");
+
+      event.target.value = "";
+      return;
+    }
+
     try {
       setUploadingImage(true);
 
@@ -193,26 +197,25 @@ const MudurluklerPage = () => {
 
       setForm((previous) => ({
         ...previous,
-        image: result.url,
+        manager_image: result.url,
       }));
     } catch (error) {
       console.error(
-        "Müdürlük görseli yüklenemedi:",
+        "Müdür fotoğrafı yüklenemedi:",
         error
       );
 
       alert(
-        "Müdürlük görseli yüklenirken bir hata oluştu."
+        "Müdür fotoğrafı yüklenirken bir hata oluştu."
       );
     } finally {
       setUploadingImage(false);
-
       event.target.value = "";
     }
   };
 
   // =========================================================
-  // GÖRSELİ KALDIR
+  // FOTOĞRAFI KALDIR
   // =========================================================
 
   const removeImage = () => {
@@ -222,7 +225,7 @@ const MudurluklerPage = () => {
 
     setForm((previous) => ({
       ...previous,
-      image: null,
+      manager_image: null,
     }));
   };
 
@@ -245,11 +248,21 @@ const MudurluklerPage = () => {
 
       const payload = {
         name: form.name.trim(),
-        phone: form.phone.trim() || null,
+
+        manager_name:
+          form.manager_name.trim() || null,
+
+        manager_image:
+          form.manager_image || null,
+
+        phone:
+          form.phone.trim() || null,
+
         extension:
           form.extension.trim() || null,
-        email: form.email.trim() || null,
-        image: form.image,
+
+        email:
+          form.email.trim() || null,
       };
 
       if (editingDepartment) {
@@ -296,9 +309,7 @@ const MudurluklerPage = () => {
     }
 
     try {
-      await deleteDepartment(
-        department.id
-      );
+      await deleteDepartment(department.id);
 
       await loadDepartments();
     } catch (error) {
@@ -327,8 +338,7 @@ const MudurluklerPage = () => {
           </h1>
 
           <p className="mt-1 text-sm text-slate-500">
-            Belediye müdürlüklerini buradan
-            yönetebilirsiniz.
+            Belediye müdürlüklerini buradan yönetebilirsiniz.
           </p>
         </div>
 
@@ -346,6 +356,7 @@ const MudurluklerPage = () => {
       {/* LIST */}
 
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
         {loading ? (
           <div className="flex min-h-64 items-center justify-center text-sm text-slate-500">
             Müdürlükler yükleniyor...
@@ -359,112 +370,125 @@ const MudurluklerPage = () => {
             </h3>
 
             <p className="mt-1 text-sm text-slate-500">
-              İlk müdürlüğü eklemek için
-              yukarıdaki butonu kullanın.
+              İlk müdürlüğü eklemek için yukarıdaki butonu kullanın.
             </p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
-            {departments.map(
-              (department) => (
-                <div
-                  key={department.id}
-                  className="flex flex-col gap-5 p-5 transition hover:bg-slate-50 lg:flex-row lg:items-center"
-                >
 
-                  {/* IMAGE */}
+            {departments.map((department) => (
+              <div
+                key={department.id}
+                className="flex flex-col gap-5 p-5 transition hover:bg-slate-50 lg:flex-row lg:items-center"
+              >
 
-                  <div className="h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-slate-100">
-                    {department.image ? (
-                      <img
-                        src={`${API_URL}${department.image}`}
-                        alt={department.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <Building2 className="h-10 w-10 text-slate-300" />
-                      </div>
-                    )}
-                  </div>
+                {/* MÜDÜR FOTOĞRAFI */}
 
-                  {/* INFO */}
-
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-lg font-bold text-slate-900">
-                      {department.name}
-                    </h2>
-
-                    <div className="mt-3 flex flex-col gap-2 text-sm text-slate-500 sm:flex-row sm:flex-wrap sm:gap-x-6">
-
-                      {department.phone && (
-                        <span className="inline-flex items-center gap-2">
-                          <Phone
-                            size={15}
-                            className="text-blue-700"
-                          />
-
-                          {department.phone}
-                        </span>
-                      )}
-
-                      {department.extension && (
-                        <span>
-                          Dahili:{" "}
-
-                          <strong className="text-slate-700">
-                            {department.extension}
-                          </strong>
-                        </span>
-                      )}
-
-                      {department.email && (
-                        <span className="inline-flex items-center gap-2">
-                          <Mail
-                            size={15}
-                            className="text-blue-700"
-                          />
-
-                          {department.email}
-                        </span>
-                      )}
+                <div className="h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-slate-100">
+                  {department.manager_image ? (
+                    <img
+                      src={
+                        department.manager_image.startsWith(
+                          "http"
+                        )
+                          ? department.manager_image
+                          : `${API_URL}${department.manager_image}`
+                      }
+                      alt={
+                        department.manager_name ||
+                        department.name
+                      }
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <User className="h-10 w-10 text-slate-300" />
                     </div>
-                  </div>
+                  )}
+                </div>
 
-                  {/* ACTIONS */}
+                {/* INFO */}
 
-                  <div className="flex shrink-0 gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openEditModal(
-                          department
-                        )
-                      }
-                      className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
-                    >
-                      <Edit size={16} />
+                <div className="min-w-0 flex-1">
 
-                      Düzenle
-                    </button>
+                  <h2 className="text-lg font-bold text-slate-900">
+                    {department.name}
+                  </h2>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDelete(
-                          department
-                        )
-                      }
-                      className="inline-flex items-center gap-2 rounded-xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
-                    >
-                      <Trash2 size={16} />
+                  {department.manager_name && (
+                    <p className="mt-1 text-sm font-semibold text-blue-700">
+                      {department.manager_name}
+                    </p>
+                  )}
 
-                      Sil
-                    </button>
+                  <div className="mt-3 flex flex-col gap-2 text-sm text-slate-500 sm:flex-row sm:flex-wrap sm:gap-x-6">
+
+                    {department.phone && (
+                      <span className="inline-flex items-center gap-2">
+                        <Phone
+                          size={15}
+                          className="text-blue-700"
+                        />
+
+                        {department.phone}
+                      </span>
+                    )}
+
+                    {department.extension && (
+                      <span>
+                        Dahili:{" "}
+                        <strong className="text-slate-700">
+                          {department.extension}
+                        </strong>
+                      </span>
+                    )}
+
+                    {department.email && (
+                      <span className="inline-flex items-center gap-2">
+                        <Mail
+                          size={15}
+                          className="text-blue-700"
+                        />
+
+                        {department.email}
+                      </span>
+                    )}
+
                   </div>
                 </div>
-              )
-            )}
+
+                {/* ACTIONS */}
+
+                <div className="flex shrink-0 gap-2">
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openEditModal(department)
+                    }
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                  >
+                    <Edit size={16} />
+
+                    Düzenle
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleDelete(department)
+                    }
+                    className="inline-flex items-center gap-2 rounded-xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                  >
+                    <Trash2 size={16} />
+
+                    Sil
+                  </button>
+
+                </div>
+              </div>
+            ))}
+
           </div>
         )}
       </div>
@@ -473,11 +497,13 @@ const MudurluklerPage = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-4">
+
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
 
             {/* MODAL HEADER */}
 
             <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+
               <div>
                 <h2 className="text-xl font-bold text-slate-900">
                   {editingDepartment
@@ -486,7 +512,7 @@ const MudurluklerPage = () => {
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Müdürlük bilgilerini doldurun.
+                  Müdürlük ve müdür bilgilerini doldurun.
                 </p>
               </div>
 
@@ -494,13 +520,13 @@ const MudurluklerPage = () => {
                 type="button"
                 onClick={closeModal}
                 disabled={
-                  saving ||
-                  uploadingImage
+                  saving || uploadingImage
                 }
                 className="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <X size={20} />
               </button>
+
             </div>
 
             {/* FORM */}
@@ -510,7 +536,7 @@ const MudurluklerPage = () => {
               className="space-y-5 p-6"
             >
 
-              {/* NAME */}
+              {/* MÜDÜRLÜK ADI */}
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -531,7 +557,28 @@ const MudurluklerPage = () => {
                 />
               </div>
 
-              {/* PHONE / EXTENSION */}
+              {/* MÜDÜR ADI */}
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  Müdür Adı
+                </label>
+
+                <input
+                  type="text"
+                  value={form.manager_name}
+                  onChange={(event) =>
+                    handleChange(
+                      "manager_name",
+                      event.target.value
+                    )
+                  }
+                  placeholder="Örn. Ahmet YILMAZ"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+
+              {/* TELEFON / DAHİLİ */}
 
               <div className="grid gap-5 md:grid-cols-2">
 
@@ -572,6 +619,7 @@ const MudurluklerPage = () => {
                     className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
+
               </div>
 
               {/* EMAIL */}
@@ -595,55 +643,58 @@ const MudurluklerPage = () => {
                 />
               </div>
 
-              {/* IMAGE */}
+              {/* MÜDÜR FOTOĞRAFI */}
 
               <div>
+
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Müdürlük Görseli
+                  Müdür Fotoğrafı
                 </label>
 
-                {form.image ? (
+                {form.manager_image ? (
+
                   <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
 
                     <img
-                      src={`${API_URL}${form.image}`}
-                      alt="Müdürlük"
+                      src={
+                        form.manager_image.startsWith(
+                          "http"
+                        )
+                          ? form.manager_image
+                          : `${API_URL}${form.manager_image}`
+                      }
+                      alt="Müdür"
                       className="h-56 w-full object-cover"
                     />
-
-                    <div className="absolute left-3 top-3 rounded-xl bg-white/90 px-3 py-2 text-xs font-medium text-slate-700 shadow">
-                      Görsel seçildi
-                    </div>
 
                     <button
                       type="button"
                       onClick={removeImage}
                       disabled={
-                        saving ||
-                        uploadingImage
+                        saving || uploadingImage
                       }
-                      className="absolute right-3 top-3 rounded-xl bg-white p-2 text-red-600 shadow-lg transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="absolute right-3 top-3 rounded-xl bg-white p-2 text-red-600 shadow-lg transition hover:bg-red-50 disabled:opacity-50"
                     >
                       <X size={18} />
                     </button>
+
                   </div>
+
                 ) : (
+
                   <div className="grid gap-4 md:grid-cols-2">
 
-                    {/* MEDYA KÜTÜPHANESİ */}
+                    {/* MEDYA */}
 
                     <button
                       type="button"
                       onClick={() =>
-                        setIsMediaPickerOpen(
-                          true
-                        )
+                        setIsMediaPickerOpen(true)
                       }
                       disabled={
-                        uploadingImage ||
-                        saving
+                        saving || uploadingImage
                       }
-                      className="flex h-44 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 text-slate-500 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex h-44 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 text-slate-500 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
                     >
                       <Building2
                         size={36}
@@ -655,32 +706,26 @@ const MudurluklerPage = () => {
                       </span>
 
                       <span className="mt-1 text-center text-xs">
-                        Medya kütüphanesinden
-                        görsel seçin
+                        Medya kütüphanesinden fotoğraf seçin
                       </span>
                     </button>
 
-                    {/* BİLGİSAYARDAN YÜKLE */}
+                    {/* BİLGİSAYARDAN */}
 
                     <label
-                      className={`flex h-44 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 text-slate-500 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 ${
-                        uploadingImage ||
-                        saving
+                      className={`flex h-44 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 text-slate-500 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 ${
+                        saving || uploadingImage
                           ? "cursor-not-allowed opacity-50"
                           : "cursor-pointer"
                       }`}
                     >
+
                       {uploadingImage ? (
                         <>
                           <div className="mb-3 h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700" />
 
-                          <span className="font-semibold text-slate-700">
+                          <span className="font-semibold">
                             Yükleniyor...
-                          </span>
-
-                          <span className="mt-1 text-center text-xs">
-                            Görsel sunucuya
-                            yükleniyor
                           </span>
                         </>
                       ) : (
@@ -695,9 +740,7 @@ const MudurluklerPage = () => {
                           </span>
 
                           <span className="mt-1 text-center text-xs">
-                            Mac'inizden JPG,
-                            PNG, WEBP veya GIF
-                            seçin
+                            JPG, PNG, WEBP veya GIF
                           </span>
                         </>
                       )}
@@ -709,14 +752,16 @@ const MudurluklerPage = () => {
                           handleComputerUpload
                         }
                         disabled={
-                          uploadingImage ||
-                          saving
+                          saving || uploadingImage
                         }
                         className="hidden"
                       />
+
                     </label>
+
                   </div>
                 )}
+
               </div>
 
               {/* BUTTONS */}
@@ -727,10 +772,9 @@ const MudurluklerPage = () => {
                   type="button"
                   onClick={closeModal}
                   disabled={
-                    saving ||
-                    uploadingImage
+                    saving || uploadingImage
                   }
-                  className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
                 >
                   İptal
                 </button>
@@ -738,21 +782,21 @@ const MudurluklerPage = () => {
                 <button
                   type="submit"
                   disabled={
-                    saving ||
-                    uploadingImage
+                    saving || uploadingImage
                   }
                   className="rounded-xl bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving
                     ? "Kaydediliyor..."
-                    : uploadingImage
-                    ? "Görsel Yükleniyor..."
                     : editingDepartment
                     ? "Güncelle"
                     : "Kaydet"}
                 </button>
+
               </div>
+
             </form>
+
           </div>
         </div>
       )}
@@ -766,6 +810,7 @@ const MudurluklerPage = () => {
         }
         onSelect={handleMediaSelect}
       />
+
     </div>
   );
 };

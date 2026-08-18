@@ -20,6 +20,7 @@ ALLOWED_MODULES = {
     "deputy_mayor",
     "council_members",
     "departments",
+    "organization",
 }
 
 

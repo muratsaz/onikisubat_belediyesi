@@ -19,6 +19,9 @@ from app.api import (
     deputy_mayor,
     council_member,
     department,
+    mission_vision,
+    organization,
+
 )
 
 from app.api import (
@@ -46,7 +49,8 @@ from app.models.mayor_page import MayorPage
 from app.models.deputy_mayor import DeputyMayor
 from app.models.council_member import CouncilMember
 from app.models.department import Department
-
+from app.models.mission_vision import MissionVision
+from app.models.organization import Organization
 
 app = FastAPI(
     title="Onikişubat Belediyesi API",
@@ -85,10 +89,10 @@ app.include_router(media.router)
 app.include_router(mayor_page.router)
 app.include_router(mayor.router)
 app.include_router(deputy_mayor.router)
-
+app.include_router(organization.router)
 app.include_router(council_member.router)
 app.include_router(department.router)
-
+app.include_router(mission_vision.router)
 app.include_router(dashboard_router)
 app.include_router(page_router)
 

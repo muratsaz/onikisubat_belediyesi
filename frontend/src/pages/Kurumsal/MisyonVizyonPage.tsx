@@ -1,8 +1,31 @@
+import { useEffect, useState } from "react";
 import { Eye, Target, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
+
 import PageHero from "../../components/kurumsal/PageHero";
 
+import {
+  getMissionVision,
+  type MissionVision,
+} from "../../services/missionVisionService";
+
 const MisyonVizyonPage = () => {
+  const [missionVision, setMissionVision] =
+    useState<MissionVision | null>(null);
+
+  useEffect(() => {
+    getMissionVision()
+      .then((data) => {
+        setMissionVision(data);
+      })
+      .catch((error) => {
+        console.error(
+          "Misyon ve vizyon alınamadı:",
+          error
+        );
+      });
+  }, []);
+
   return (
     <>
       <PageHero
@@ -12,7 +35,6 @@ const MisyonVizyonPage = () => {
 
       <section className="bg-slate-50 py-20">
         <div className="mx-auto max-w-7xl px-4">
-
           <div className="grid gap-8 lg:grid-cols-3">
 
             {/* Misyon */}
@@ -20,7 +42,7 @@ const MisyonVizyonPage = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: .5 }}
+              transition={{ duration: 0.5 }}
               className="rounded-3xl bg-white p-8 shadow-xl"
             >
               <Target
@@ -33,20 +55,16 @@ const MisyonVizyonPage = () => {
               </h2>
 
               <p className="leading-8 text-slate-600">
-                Vatandaş odaklı, şeffaf, katılımcı ve kaliteli
-                hizmet anlayışıyla ilçemizin yaşam kalitesini
-                yükseltmek.
+                {missionVision?.mission}
               </p>
-
             </motion.div>
 
             {/* Vizyon */}
-
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: .6 }}
+              transition={{ duration: 0.6 }}
               className="rounded-3xl bg-white p-8 shadow-xl"
             >
               <Eye
@@ -59,19 +77,16 @@ const MisyonVizyonPage = () => {
               </h2>
 
               <p className="leading-8 text-slate-600">
-                Yenilikçi belediyecilik anlayışıyla örnek gösterilen,
-                sürdürülebilir ve yaşanabilir bir şehir oluşturmak.
+                {missionVision?.vision}
               </p>
-
             </motion.div>
 
             {/* Temel Değerler */}
-
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: .7 }}
+              transition={{ duration: 0.7 }}
               className="rounded-3xl bg-white p-8 shadow-xl"
             >
               <ShieldCheck
@@ -91,11 +106,9 @@ const MisyonVizyonPage = () => {
                 <li>• Yenilikçilik</li>
                 <li>• Vatandaş Memnuniyeti</li>
               </ul>
-
             </motion.div>
 
           </div>
-
         </div>
       </section>
     </>

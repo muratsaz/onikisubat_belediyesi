@@ -1,31 +1,37 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
 
-class DepartmentCreate(BaseModel):
+class DepartmentBase(BaseModel):
     name: str
-    phone: str | None = None
-    extension: str | None = None
-    email: str | None = None
-    image: str | None = None
+
+    manager_name: Optional[str] = None
+    manager_image: Optional[str] = None
+
+    phone: Optional[str] = None
+    extension: Optional[str] = None
+    email: Optional[str] = None
+
+
+class DepartmentCreate(DepartmentBase):
+    pass
 
 
 class DepartmentUpdate(BaseModel):
-    name: str
-    phone: str | None = None
-    extension: str | None = None
-    email: str | None = None
-    image: str | None = None
+    name: Optional[str] = None
+
+    manager_name: Optional[str] = None
+    manager_image: Optional[str] = None
+
+    phone: Optional[str] = None
+    extension: Optional[str] = None
+    email: Optional[str] = None
 
 
-class DepartmentResponse(BaseModel):
+class DepartmentResponse(DepartmentBase):
     id: int
-    name: str
-    phone: str | None
-    extension: str | None
-    email: str | None
-    image: str | None
     created_at: datetime
     updated_at: datetime
 

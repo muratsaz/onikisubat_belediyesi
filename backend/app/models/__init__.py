@@ -10,3 +10,5 @@ from app.models.user import User
 from app.models.media import Media
 from app.models.mayor import Mayor
 from app.models.mayor_page import MayorPage
+from app.models.mission_vision import MissionVision
+from app.models.organization import Organization

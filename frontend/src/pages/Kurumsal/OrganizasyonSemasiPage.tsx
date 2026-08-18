@@ -1,7 +1,43 @@
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+
 import PageHero from "../../components/kurumsal/PageHero";
+import {
+  getOrganization,
+  type Organization,
+} from "../../services/organizationService";
+
+const API_URL = "http://127.0.0.1:8000";
 
 const OrganizasyonSemasiPage = () => {
+  const [organization, setOrganization] =
+    useState<Organization | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrganization = async () => {
+      try {
+        const data = await getOrganization();
+        setOrganization(data);
+      } catch (error) {
+        console.error(
+          "Organizasyon şeması alınamadı:",
+          error
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrganization();
+  }, []);
+
+  const imageUrl = organization?.image_url
+    ? `${API_URL}${organization.image_url}`
+    : null;
+
   return (
     <>
       <PageHero
@@ -19,11 +55,23 @@ const OrganizasyonSemasiPage = () => {
             transition={{ duration: 0.5 }}
             className="overflow-hidden rounded-3xl bg-white p-8 shadow-xl"
           >
-            <img
-              src="/images/organizasyon-semasi/sema.png"
-              alt="Organizasyon Şeması"
-              className="w-full rounded-2xl border object-contain"
-            />
+            {loading ? (
+              <div className="flex min-h-[400px] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              </div>
+            ) : imageUrl ? (
+              <img
+                src={imageUrl}
+                alt="Organizasyon Şeması"
+                className="w-full rounded-2xl border object-contain"
+              />
+            ) : (
+              <div className="flex min-h-[300px] items-center justify-center">
+                <p className="text-slate-500">
+                  Organizasyon şeması henüz eklenmemiş.
+                </p>
+              </div>
+            )}
           </motion.div>
 
         </div>

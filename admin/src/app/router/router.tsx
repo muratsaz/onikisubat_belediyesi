@@ -15,6 +15,9 @@ import MayorPage from "../../pages/Mayor/MayorPage";
 import DeputyMayorPage from "../../pages/DeputyMayor/DeputyMayorPage";
 import MeclisUyeleriPage from "../../pages/Kurumsal/MeclisUyeleriPage";
 import MudurluklerPage from "../../pages/Kurumsal/MudurluklerPage";
+import MisyonVizyonPage from "../../pages/Kurumsal/MisyonVizyonPage";
+import OrganizasyonSemasiPage from "../../pages/Kurumsal/OrganizasyonSemasiPage";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -83,21 +86,13 @@ export const router = createBrowserRouter([
 
       {
         path: "kurumsal/organizasyon-semasi",
-        element: (
-          <div>
-            Organizasyon Şeması
-          </div>
-        ),
+        element:<OrganizasyonSemasiPage/>,
       },
 
       {
-        path: "kurumsal/misyon-vizyon",
-        element: (
-          <div>
-            Misyon & Vizyon
-          </div>
-        ),
-      },
+  path: "kurumsal/misyon-vizyon",
+  element: <MisyonVizyonPage />,
+},
     ],
   },
 
