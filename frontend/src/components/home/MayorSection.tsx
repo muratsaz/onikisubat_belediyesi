@@ -69,7 +69,10 @@ const MayorSection = () => {
   const mayorImage = getImageUrl(mayor.image);
 
   return (
-    <section className="relative overflow-hidden bg-white py-12 lg:py-16">
+    <section
+  id="baskan"
+  className="relative overflow-hidden bg-white py-12 lg:py-16"
+>
       <div className="mx-auto max-w-7xl px-4 lg:px-6">
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
 

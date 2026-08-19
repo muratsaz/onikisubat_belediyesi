@@ -17,6 +17,7 @@ import MeclisUyeleriPage from "../../pages/Kurumsal/MeclisUyeleriPage";
 import MudurluklerPage from "../../pages/Kurumsal/MudurluklerPage";
 import MisyonVizyonPage from "../../pages/Kurumsal/MisyonVizyonPage";
 import OrganizasyonSemasiPage from "../../pages/Kurumsal/OrganizasyonSemasiPage";
+import NavigationPage from "../../pages/Navigation/NavigationPage";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,11 @@ export const router = createBrowserRouter([
         path: "settings",
         element: <SettingsPage />,
       },
+
+      {
+  path: "navigation",
+  element: <NavigationPage />,
+},
 
       {
         path: "mayor",

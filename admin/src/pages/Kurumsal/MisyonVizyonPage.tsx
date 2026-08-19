@@ -3,14 +3,9 @@ import { Save, Loader2 } from "lucide-react";
 import {
   getMissionVision,
   updateMissionVision,
-  type MissionVision,
 } from "../../services/missionVisionService";
 
 const MisyonVizyon = () => {
-    
-  const [missionVision, setMissionVision] =
-    useState<MissionVision | null>(null);
-
   const [mission, setMission] = useState("");
   const [vision, setVision] = useState("");
 
@@ -25,7 +20,6 @@ const MisyonVizyon = () => {
 
         const data = await getMissionVision();
 
-        setMissionVision(data);
         setMission(data.mission);
         setVision(data.vision);
       } catch (error) {
@@ -52,7 +46,6 @@ const MisyonVizyon = () => {
         vision,
       });
 
-      setMissionVision(data);
       setMission(data.mission);
       setVision(data.vision);
 

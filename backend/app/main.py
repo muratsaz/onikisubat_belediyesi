@@ -21,6 +21,7 @@ from app.api import (
     department,
     mission_vision,
     organization,
+    navigation,
 
 )
 
@@ -51,6 +52,8 @@ from app.models.council_member import CouncilMember
 from app.models.department import Department
 from app.models.mission_vision import MissionVision
 from app.models.organization import Organization
+from app.models.navigation import Navigation
+
 
 app = FastAPI(
     title="Onikişubat Belediyesi API",
@@ -99,6 +102,7 @@ app.include_router(page_router)
 app.include_router(tender.router)
 app.include_router(tender_document.router)
 app.include_router(contact_message.router)
+app.include_router(navigation.router)
 
 
 @app.get("/")

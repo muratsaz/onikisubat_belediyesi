@@ -1,3 +1,4 @@
+
 import type { LucideIcon } from "lucide-react";
 
 import {
@@ -14,6 +15,7 @@ import {
   Building2,
   Network,
   Target,
+  Menu,
 } from "lucide-react";
 
 export interface SidebarMenuChild {
@@ -76,32 +78,43 @@ export const sidebarMenu: SidebarMenuItem[] = [
         path: "/mayor",
         icon: UserRound,
       },
+
       {
         title: "Başkan Yardımcıları",
         path: "/kurumsal/baskan-yardimcilari",
         icon: UserCog,
       },
+
       {
         title: "Meclis Üyeleri",
         path: "/kurumsal/meclis-uyeleri",
         icon: Users,
       },
+
       {
         title: "Müdürlükler",
         path: "/kurumsal/mudurlukler",
         icon: Building2,
       },
+
       {
         title: "Organizasyon Şeması",
         path: "/kurumsal/organizasyon-semasi",
         icon: Network,
       },
+
       {
         title: "Misyon & Vizyon",
         path: "/kurumsal/misyon-vizyon",
         icon: Target,
       },
     ],
+  },
+
+  {
+    title: "Menü Yönetimi",
+    path: "/navigation",
+    icon: Menu,
   },
 
   {
@@ -117,3 +130,4 @@ export const sidebarMenu: SidebarMenuItem[] = [
     icon: Settings,
   },
 ];
+

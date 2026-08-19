@@ -3,6 +3,7 @@ import {
   Newspaper,
   Megaphone,
   FolderKanban,
+  Menu,
 } from "lucide-react";
 
 export const sidebarMenu = [
@@ -25,5 +26,10 @@ export const sidebarMenu = [
     title: "Projeler",
     path: "/projects",
     icon: FolderKanban,
+  },
+  {
+    title: "Menü Yönetimi",
+    path: "/navigation",
+    icon: Menu,
   },
 ];
