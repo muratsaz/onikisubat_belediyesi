@@ -6,34 +6,42 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-const cards = [
-  {
-    title: "Telefon",
-    value: "0344 211 46 46",
-    icon: Phone,
-    color: "bg-blue-100 text-blue-700",
-  },
-  {
-    title: "E-Posta",
-    value: "info@onikisubat.bel.tr",
-    icon: Mail,
-    color: "bg-emerald-100 text-emerald-700",
-  },
-  {
-    title: "Adres",
-    value: "Onikişubat / Kahramanmaraş",
-    icon: MapPin,
-    color: "bg-orange-100 text-orange-700",
-  },
-  {
-    title: "Çalışma Saatleri",
-    value: "08:00 - 17:00",
-    icon: Clock3,
-    color: "bg-violet-100 text-violet-700",
-  },
-];
+import type { ContactSettings } from "../../services/contact.service";
 
-const ContactInfoCards = () => {
+interface ContactInfoCardsProps {
+  contact: ContactSettings;
+}
+
+const ContactInfoCards = ({
+  contact,
+}: ContactInfoCardsProps) => {
+  const cards = [
+    {
+      title: "Telefon",
+      value: contact.phone || "-",
+      icon: Phone,
+      color: "bg-blue-100 text-blue-700",
+    },
+    {
+      title: "E-Posta",
+      value: contact.email || "-",
+      icon: Mail,
+      color: "bg-emerald-100 text-emerald-700",
+    },
+    {
+      title: "Adres",
+      value: contact.address || "-",
+      icon: MapPin,
+      color: "bg-orange-100 text-orange-700",
+    },
+    {
+      title: "Çalışma Saatleri",
+      value: contact.working_hours || "-",
+      icon: Clock3,
+      color: "bg-violet-100 text-violet-700",
+    },
+  ];
+
   return (
     <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => {

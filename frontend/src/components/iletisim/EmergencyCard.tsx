@@ -6,34 +6,44 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-const services = [
-  {
-    title: "Alo 153 Beyaz Masa",
-    description:
-      "Talep, öneri ve şikayetlerinizi 7/24 iletebilirsiniz.",
-    icon: Phone,
-    color: "bg-blue-100 text-blue-700",
-    href: "tel:153",
-  },
-  {
-    title: "WhatsApp Destek",
-    description:
-      "Mobil cihazınızdan hızlı şekilde bize ulaşın.",
-    icon: MessageCircle,
-    color: "bg-emerald-100 text-emerald-700",
-    href: "https://wa.me/905000000000",
-  },
-  {
-    title: "E-Belediye",
-    description:
-      "Online işlemlerinizi güvenle gerçekleştirin.",
-    icon: FileText,
-    color: "bg-orange-100 text-orange-700",
-    href: "#",
-  },
-];
+import type { ContactSettings } from "../../services/contact.service";
 
-const EmergencyCard = () => {
+interface EmergencyCardProps {
+  contact: ContactSettings;
+}
+
+const EmergencyCard = ({
+  contact,
+}: EmergencyCardProps) => {
+  const services = [
+    {
+      title: "Alo 153 Beyaz Masa",
+      description:
+        "Talep, öneri ve şikayetlerinizi 7/24 iletebilirsiniz.",
+      icon: Phone,
+      color: "bg-blue-100 text-blue-700",
+      href: contact.alo_153
+        ? `tel:${contact.alo_153}`
+        : "#",
+    },
+    {
+      title: "WhatsApp Destek",
+      description:
+        "Mobil cihazınızdan hızlı şekilde bize ulaşın.",
+      icon: MessageCircle,
+      color: "bg-emerald-100 text-emerald-700",
+      href: contact.whatsapp || "#",
+    },
+    {
+      title: "E-Belediye",
+      description:
+        "Online işlemlerinizi güvenle gerçekleştirin.",
+      icon: FileText,
+      color: "bg-orange-100 text-orange-700",
+      href: contact.e_belediye_url || "#",
+    },
+  ];
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 40 }}
@@ -43,9 +53,7 @@ const EmergencyCard = () => {
       className="overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-sky-600 text-white shadow-xl"
     >
       <div className="grid items-center gap-10 p-10 lg:grid-cols-[340px_1fr]">
-
         <div>
-
           <span className="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold">
             Hızlı İletişim
           </span>
@@ -59,11 +67,9 @@ const EmergencyCard = () => {
             hızlı iletişim kanallarımız üzerinden kolayca
             oluşturabilirsiniz.
           </p>
-
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-
           {services.map((service) => {
             const Icon = service.icon;
 
@@ -76,7 +82,12 @@ const EmergencyCard = () => {
                 transition={{ duration: 0.25 }}
                 key={service.title}
                 href={service.href}
-                target="_blank"
+                target={
+                  service.href === "#" ||
+                  service.href.startsWith("tel:")
+                    ? undefined
+                    : "_blank"
+                }
                 rel="noreferrer"
                 className="group rounded-3xl bg-white p-7 text-slate-900 transition hover:shadow-2xl"
               >
@@ -98,13 +109,10 @@ const EmergencyCard = () => {
                   Hemen Git
                   <ArrowRight size={18} />
                 </div>
-
               </motion.a>
             );
           })}
-
         </div>
-
       </div>
     </motion.section>
   );

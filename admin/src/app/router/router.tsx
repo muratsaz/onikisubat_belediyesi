@@ -18,6 +18,7 @@ import MudurluklerPage from "../../pages/Kurumsal/MudurluklerPage";
 import MisyonVizyonPage from "../../pages/Kurumsal/MisyonVizyonPage";
 import OrganizasyonSemasiPage from "../../pages/Kurumsal/OrganizasyonSemasiPage";
 import NavigationPage from "../../pages/Navigation/NavigationPage";
+import ContactMessagesPage from "../../pages/ContactMessages/ContactMessagesPage";
 
 export const router = createBrowserRouter([
   {
@@ -66,9 +67,9 @@ export const router = createBrowserRouter([
       },
 
       {
-  path: "navigation",
-  element: <NavigationPage />,
-},
+        path: "navigation",
+        element: <NavigationPage />,
+      },
 
       {
         path: "mayor",
@@ -86,19 +87,24 @@ export const router = createBrowserRouter([
       },
 
       {
-  path: "kurumsal/mudurlukler",
-  element: <MudurluklerPage />,
-},
-
-      {
-        path: "kurumsal/organizasyon-semasi",
-        element:<OrganizasyonSemasiPage/>,
+        path: "kurumsal/mudurlukler",
+        element: <MudurluklerPage />,
       },
 
       {
-  path: "kurumsal/misyon-vizyon",
-  element: <MisyonVizyonPage />,
-},
+        path: "kurumsal/organizasyon-semasi",
+        element: <OrganizasyonSemasiPage />,
+      },
+
+      {
+        path: "kurumsal/misyon-vizyon",
+        element: <MisyonVizyonPage />,
+      },
+
+      {
+        path: "contact-messages",
+        element: <ContactMessagesPage />,
+      },
     ],
   },
 

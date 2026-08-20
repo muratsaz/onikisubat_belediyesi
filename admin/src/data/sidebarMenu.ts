@@ -1,4 +1,3 @@
-
 import type { LucideIcon } from "lucide-react";
 
 import {
@@ -16,6 +15,7 @@ import {
   Network,
   Target,
   Menu,
+  MessageSquare,
 } from "lucide-react";
 
 export interface SidebarMenuChild {
@@ -112,6 +112,12 @@ export const sidebarMenu: SidebarMenuItem[] = [
   },
 
   {
+    title: "İletişim Mesajları",
+    path: "/contact-messages",
+    icon: MessageSquare,
+  },
+
+  {
     title: "Menü Yönetimi",
     path: "/navigation",
     icon: Menu,
@@ -130,4 +136,3 @@ export const sidebarMenu: SidebarMenuItem[] = [
     icon: Settings,
   },
 ];
-

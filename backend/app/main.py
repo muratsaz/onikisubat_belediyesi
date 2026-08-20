@@ -22,7 +22,8 @@ from app.api import (
     mission_vision,
     organization,
     navigation,
-
+    contact_settings,
+    faq,
 )
 
 from app.api import (
@@ -33,7 +34,7 @@ from app.api import (
 
 from app.database.database import engine
 from app.database.base import Base
-
+from app.models.faq import FAQ
 from app.models.user import User
 from app.models.news import News
 from app.models.announcement import Announcement
@@ -53,6 +54,7 @@ from app.models.department import Department
 from app.models.mission_vision import MissionVision
 from app.models.organization import Organization
 from app.models.navigation import Navigation
+from app.models.contact_settings import ContactSettings
 
 
 app = FastAPI(
@@ -98,7 +100,8 @@ app.include_router(department.router)
 app.include_router(mission_vision.router)
 app.include_router(dashboard_router)
 app.include_router(page_router)
-
+app.include_router(contact_settings.router)
+app.include_router(faq.router)
 app.include_router(tender.router)
 app.include_router(tender_document.router)
 app.include_router(contact_message.router)

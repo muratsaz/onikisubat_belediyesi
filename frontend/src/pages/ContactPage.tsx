@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import PageHeader from "../components/common/PageHeader";
 
 import ContactInfoCards from "../components/iletisim/ContactInfoCards";
@@ -8,7 +10,30 @@ import EmergencyCard from "../components/iletisim/EmergencyCard";
 import DepartmentContacts from "../components/iletisim/DepartmentContacts.";
 import FaqAccordion from "../components/iletisim/FaqAccordion";
 
+import {
+  getContactSettings,
+  type ContactSettings,
+} from "../services/contact.service";
+
 const ContactPage = () => {
+  const [contact, setContact] = useState<ContactSettings | null>(null);
+
+  useEffect(() => {
+    const fetchContactSettings = async () => {
+      try {
+        const data = await getContactSettings();
+        setContact(data);
+      } catch (error) {
+        console.error(
+          "İletişim ayarları alınamadı:",
+          error
+        );
+      }
+    };
+
+    fetchContactSettings();
+  }, []);
+
   return (
     <>
       <PageHeader
@@ -18,26 +43,26 @@ const ContactPage = () => {
       />
 
       <section className="bg-slate-100 py-16">
-
         <div className="mx-auto max-w-7xl space-y-12 px-4 lg:px-6">
 
-          <ContactInfoCards />
+          {contact && (
+            <ContactInfoCards contact={contact} />
+          )}
 
           <div className="grid gap-8 lg:grid-cols-[1fr_520px]">
             <ContactForm />
             <ContactMap />
           </div>
 
-          <ContactDetails />
+          {contact && <ContactDetails contact={contact} />}
 
-          <EmergencyCard />
+          {contact && <EmergencyCard contact={contact} />}
 
           <DepartmentContacts />
 
           <FaqAccordion />
 
         </div>
-
       </section>
     </>
   );

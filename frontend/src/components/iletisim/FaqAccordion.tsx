@@ -1,40 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
   HelpCircle,
 } from "lucide-react";
 
-const faqs = [
-  {
-    question: "Başvuruma ne zaman dönüş yapılır?",
-    answer:
-      "Başvurularınız ilgili müdürlüğe yönlendirilir ve en kısa sürede değerlendirilerek tarafınıza dönüş sağlanır.",
-  },
-  {
-    question: "Beyaz Masa başvurumu nasıl takip edebilirim?",
-    answer:
-      "Başvuru numaranız ile Beyaz Masa sistemi üzerinden veya çağrı merkezimiz aracılığıyla başvurunuzun durumunu takip edebilirsiniz.",
-  },
-  {
-    question: "İletişim formundan gönderilen mesajlar güvenli midir?",
-    answer:
-      "Evet. Gönderdiğiniz bilgiler güvenli şekilde saklanır ve yalnızca ilgili birimler tarafından değerlendirilir.",
-  },
-  {
-    question: "E-Belediye hizmetlerine nasıl ulaşabilirim?",
-    answer:
-      "E-Belediye sistemine ana menüde bulunan E-Belediye bağlantısından veya hızlı işlem kartları üzerinden ulaşabilirsiniz.",
-  },
-  {
-    question: "Mesai saatleri dışında belediyeye nasıl ulaşabilirim?",
-    answer:
-      "Mesai saatleri dışında Alo 153 Beyaz Masa ve resmi sosyal medya hesaplarımız üzerinden bize ulaşabilirsiniz.",
-  },
-];
+import {
+  getFAQs,
+  type FAQ,
+} from "../../services/faq.service";
 
 const FaqAccordion = () => {
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      try {
+        const data = await getFAQs();
+        setFaqs(data);
+      } catch (error) {
+        console.error(
+          "Sık sorulan sorular alınamadı:",
+          error
+        );
+      }
+    };
+
+    fetchFAQs();
+  }, []);
 
   return (
     <motion.section
@@ -60,18 +54,19 @@ const FaqAccordion = () => {
       <div className="mt-10 space-y-4">
 
         {faqs.map((faq, index) => {
-
           const isOpen = openIndex === index;
 
           return (
             <div
-              key={index}
+              key={faq.id}
               className="overflow-hidden rounded-2xl border border-slate-200"
             >
 
               <button
                 onClick={() =>
-                  setOpenIndex(isOpen ? null : index)
+                  setOpenIndex(
+                    isOpen ? null : index
+                  )
                 }
                 className="flex w-full items-center justify-between px-8 py-6 text-left transition hover:bg-slate-50"
               >
@@ -102,7 +97,6 @@ const FaqAccordion = () => {
               <AnimatePresence>
 
                 {isOpen && (
-
                   <motion.div
                     initial={{
                       height: 0,
@@ -130,7 +124,6 @@ const FaqAccordion = () => {
                     </div>
 
                   </motion.div>
-
                 )}
 
               </AnimatePresence>
