@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+
 import PageHeader from "../../components/common/PageHeader";
 
 import {
@@ -135,12 +137,14 @@ const BaskanPage = () => {
                   Özgeçmiş
                 </button>
 
-                <button
-                  type="button"
-                  className="w-full border-t border-slate-100 px-6 py-4 text-left text-base text-slate-700 transition hover:bg-slate-50 hover:text-blue-700"
+                {/* BAŞKANA MESAJ */}
+
+                <Link
+                  to="/iletisim#baskana-mesaj"
+                  className="block w-full border-t border-slate-100 px-6 py-4 text-left text-base text-slate-700 transition hover:bg-slate-50 hover:text-blue-700"
                 >
                   Başkana Mesaj
-                </button>
+                </Link>
 
                 <button
                   type="button"

@@ -73,11 +73,12 @@ const ContactForm = () => {
 
   return (
     <motion.div
+      id="baskana-mesaj"
       initial={{ opacity: 0, x: -30 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+      className="scroll-mt-24 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
     >
       <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
         İletişim Formu
@@ -97,6 +98,7 @@ const ContactForm = () => {
         className="mt-10 space-y-6"
       >
         {/* Ad Soyad + Telefon */}
+
         <div className="grid gap-6 md:grid-cols-2">
           <div className="relative">
             <User
@@ -134,6 +136,7 @@ const ContactForm = () => {
         </div>
 
         {/* E-Posta */}
+
         <div className="relative">
           <Mail
             size={20}
@@ -152,6 +155,7 @@ const ContactForm = () => {
         </div>
 
         {/* Konu */}
+
         <div className="relative">
           <FileText
             size={20}
@@ -170,6 +174,7 @@ const ContactForm = () => {
         </div>
 
         {/* Mesaj */}
+
         <div className="relative">
           <MessageSquare
             size={20}
@@ -188,6 +193,7 @@ const ContactForm = () => {
         </div>
 
         {/* Başarı */}
+
         {success && (
           <div className="rounded-2xl bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-700">
             {success}
@@ -195,6 +201,7 @@ const ContactForm = () => {
         )}
 
         {/* Hata */}
+
         {error && (
           <div className="rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-700">
             {error}
@@ -202,6 +209,7 @@ const ContactForm = () => {
         )}
 
         {/* Gönder */}
+
         <button
           type="submit"
           disabled={loading}

@@ -34,6 +34,38 @@ const ContactPage = () => {
     fetchContactSettings();
   }, []);
 
+  // Başkana Mesaj bağlantısından gelindiğinde
+  // doğrudan mesaj formuna kaydır.
+  useEffect(() => {
+    if (window.location.hash !== "#baskana-mesaj") {
+      return;
+    }
+
+    const scrollToContactForm = () => {
+      const element = document.getElementById("baskana-mesaj");
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+
+        return true;
+      }
+
+      return false;
+    };
+
+    // Sayfanın DOM'a tamamen yerleşmesini bekle.
+    const timeout = window.setTimeout(() => {
+      scrollToContactForm();
+    }, 100);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, []);
+
   return (
     <>
       <PageHeader
@@ -54,9 +86,13 @@ const ContactPage = () => {
             <ContactMap />
           </div>
 
-          {contact && <ContactDetails contact={contact} />}
+          {contact && (
+            <ContactDetails contact={contact} />
+          )}
 
-          {contact && <EmergencyCard contact={contact} />}
+          {contact && (
+            <EmergencyCard contact={contact} />
+          )}
 
           <DepartmentContacts />
 

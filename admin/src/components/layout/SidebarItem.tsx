@@ -24,21 +24,20 @@ const SidebarItem = ({
   title,
   path,
   icon: Icon,
-  children,
+  children = [],
 }: SidebarItemProps) => {
   const location = useLocation();
 
-  const hasChildren = Boolean(
-    children && children.length > 0
-  );
+  const hasChildren = children.length > 0;
 
   const isChildActive = hasChildren
-    ? children!.some((child) =>
+    ? children.some((child) =>
         location.pathname.startsWith(child.path)
       )
     : false;
 
-  const [isOpen, setIsOpen] = useState(isChildActive);
+  const [isOpen, setIsOpen] =
+    useState<boolean>(isChildActive);
 
   useEffect(() => {
     if (isChildActive) {
@@ -46,15 +45,21 @@ const SidebarItem = ({
     }
   }, [isChildActive]);
 
+  /*
+   * CHILD MENÜLÜ ANA MADDE
+   * Kurumsal ve İletişim burada aynı davranışı kullanır.
+   */
   if (hasChildren) {
     return (
       <li>
         <button
           type="button"
-          onClick={() => setIsOpen((value) => !value)}
+          onClick={() =>
+            setIsOpen((current) => !current)
+          }
           className={[
             "group relative flex w-full items-center justify-between rounded-xl px-4 py-3 font-medium transition-all duration-300",
-            isChildActive
+            isChildActive || isOpen
               ? "bg-slate-100 text-blue-700"
               : "text-slate-700 hover:bg-slate-100 hover:text-blue-700",
           ].join(" ")}
@@ -71,21 +76,15 @@ const SidebarItem = ({
           </span>
 
           {isOpen ? (
-            <ChevronDown
-              size={18}
-              className="transition-transform duration-300"
-            />
+            <ChevronDown size={18} />
           ) : (
-            <ChevronRight
-              size={18}
-              className="transition-transform duration-300"
-            />
+            <ChevronRight size={18} />
           )}
         </button>
 
         {isOpen && (
           <ul className="mt-1 space-y-1 pl-4">
-            {children!.map((child) => (
+            {children.map((child) => (
               <li key={child.path}>
                 <NavLink
                   to={child.path}
@@ -101,7 +100,7 @@ const SidebarItem = ({
                   {({ isActive }) => (
                     <>
                       {isActive && (
-                        <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-white" />
+                        <span className="absolute bottom-2 left-0 top-2 w-1 rounded-r-full bg-white" />
                       )}
 
                       {child.icon && (
@@ -125,10 +124,13 @@ const SidebarItem = ({
     );
   }
 
+  /*
+   * NORMAL ANA MENÜ MADDESİ
+   */
   return (
     <li>
       <NavLink
-        to={path || "/"}
+        to={path ?? "/"}
         className={({ isActive }) =>
           [
             "group relative flex items-center gap-4 rounded-xl px-4 py-3 font-medium transition-all duration-300",
@@ -141,7 +143,7 @@ const SidebarItem = ({
         {({ isActive }) => (
           <>
             {isActive && (
-              <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-white" />
+              <span className="absolute bottom-2 left-0 top-2 w-1 rounded-r-full bg-white" />
             )}
 
             <Icon

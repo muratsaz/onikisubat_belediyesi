@@ -16,6 +16,8 @@ import {
   Target,
   Menu,
   MessageSquare,
+  Phone,
+  HelpCircle,
 } from "lucide-react";
 
 export interface SidebarMenuChild {
@@ -69,6 +71,10 @@ export const sidebarMenu: SidebarMenuItem[] = [
     icon: Image,
   },
 
+  // =========================
+  // KURUMSAL
+  // =========================
+
   {
     title: "Kurumsal",
     icon: Building2,
@@ -111,11 +117,37 @@ export const sidebarMenu: SidebarMenuItem[] = [
     ],
   },
 
+  // =========================
+  // İLETİŞİM
+  // =========================
+
   {
-    title: "İletişim Mesajları",
-    path: "/contact-messages",
-    icon: MessageSquare,
+    title: "İletişim",
+    icon: Phone,
+    children: [
+      {
+        title: "İletişim Mesajları",
+        path: "/contact-messages",
+        icon: MessageSquare,
+      },
+
+      {
+        title: "İletişim Ayarları",
+        path: "/contact-settings",
+        icon: Settings,
+      },
+
+         {
+      title: "Sık Sorulan Sorular",
+      path: "/faqs",
+      icon: HelpCircle,
+    },
+    ],
   },
+
+  // =========================
+  // MENÜ YÖNETİMİ
+  // =========================
 
   {
     title: "Menü Yönetimi",
@@ -123,12 +155,20 @@ export const sidebarMenu: SidebarMenuItem[] = [
     icon: Menu,
   },
 
+  // =========================
+  // KULLANICILAR
+  // =========================
+
   {
     title: "Kullanıcılar",
     path: "/users",
     icon: Users,
     superadminOnly: true,
   },
+
+  // =========================
+  // AYARLAR
+  // =========================
 
   {
     title: "Ayarlar",

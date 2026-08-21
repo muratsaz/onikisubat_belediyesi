@@ -28,6 +28,29 @@ export interface ContactSettings {
   updated_at: string;
 }
 
+export interface ContactSettingsUpdate {
+  phone?: string;
+  fax?: string;
+  email?: string;
+  kep?: string;
+
+  address?: string;
+  working_hours?: string;
+
+  website?: string;
+  whatsapp?: string;
+
+  instagram?: string;
+  facebook?: string;
+  x?: string;
+  youtube?: string;
+
+  e_belediye_url?: string;
+  alo_153?: string;
+
+  map_url?: string;
+}
+
 export interface ContactMessageCreate {
   full_name: string;
   email: string;
@@ -47,9 +70,21 @@ export interface ContactMessageResponse {
   created_at: string;
 }
 
-export const getContactSettings = async (): Promise<ContactSettings> => {
-  const response = await api.get<ContactSettings>(
-    "/contact-settings/"
+export const getContactSettings =
+  async (): Promise<ContactSettings> => {
+    const response = await api.get<ContactSettings>(
+      "/contact-settings/"
+    );
+
+    return response.data;
+  };
+
+export const updateContactSettings = async (
+  data: ContactSettingsUpdate
+): Promise<ContactSettings> => {
+  const response = await api.put<ContactSettings>(
+    "/contact-settings/",
+    data
   );
 
   return response.data;
@@ -58,10 +93,11 @@ export const getContactSettings = async (): Promise<ContactSettings> => {
 export const sendContactMessage = async (
   data: ContactMessageCreate
 ): Promise<ContactMessageResponse> => {
-  const response = await api.post<ContactMessageResponse>(
-    "/contact-messages/",
-    data
-  );
+  const response =
+    await api.post<ContactMessageResponse>(
+      "/contact-messages/",
+      data
+    );
 
   return response.data;
 };

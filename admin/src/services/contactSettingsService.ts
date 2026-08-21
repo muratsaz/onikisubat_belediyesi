@@ -8,51 +8,63 @@ export interface ContactSettings {
   email?: string | null;
   kep?: string | null;
 
-  website?: string | null;
-  working_hours?: string | null;
   address?: string | null;
+  working_hours?: string | null;
+
+  website?: string | null;
+  whatsapp?: string | null;
 
   instagram?: string | null;
   facebook?: string | null;
   x?: string | null;
   youtube?: string | null;
 
-  whatsapp?: string | null;
-  alo_153?: string | null;
   e_belediye_url?: string | null;
+  alo_153?: string | null;
 
+  map_url?: string | null;
+
+  created_at: string;
   updated_at: string;
 }
 
-export type ContactSettingsFormData = Omit<
-  ContactSettings,
-  "id" | "updated_at"
->;
+export interface ContactSettingsUpdate {
+  phone?: string;
+  fax?: string;
+  email?: string;
+  kep?: string;
 
-export const getContactSettings = async (): Promise<ContactSettings> => {
-  const response = await api.get<ContactSettings>(
-    "/contact-settings"
-  );
+  address?: string;
+  working_hours?: string;
 
-  return response.data;
-};
+  website?: string;
+  whatsapp?: string;
 
-export const createContactSettings = async (
-  data: ContactSettingsFormData
-): Promise<ContactSettings> => {
-  const response = await api.post<ContactSettings>(
-    "/contact-settings",
-    data
-  );
+  instagram?: string;
+  facebook?: string;
+  x?: string;
+  youtube?: string;
 
-  return response.data;
-};
+  e_belediye_url?: string;
+  alo_153?: string;
+
+  map_url?: string;
+}
+
+export const getContactSettings =
+  async (): Promise<ContactSettings> => {
+    const response = await api.get<ContactSettings>(
+      "/contact-settings/"
+    );
+
+    return response.data;
+  };
 
 export const updateContactSettings = async (
-  data: ContactSettingsFormData
+  data: ContactSettingsUpdate
 ): Promise<ContactSettings> => {
   const response = await api.put<ContactSettings>(
-    "/contact-settings",
+    "/contact-settings/",
     data
   );
 
